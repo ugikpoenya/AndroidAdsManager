@@ -29,7 +29,6 @@ import androidx.core.view.isEmpty
 
 
 private var interstitialAd: MaxInterstitialAd? = null
-private var rewardedAd: MaxRewardedAd? = null
 
 class AppLovinManager {
     val LOG = "LOG_ADS_APPLOVIN"
@@ -168,7 +167,7 @@ class AppLovinManager {
             Log.d(LOG, "AppLovin Rewarded ID Not set")
         } else {
             Log.d(LOG, "Init AppLovin Rewarded ")
-            rewardedAd = MaxRewardedAd.getInstance(applovin_rewarded_ads, context as Activity)
+            var rewardedAd = MaxRewardedAd.getInstance(applovin_rewarded_ads, context as Activity)
             rewardedAd?.setListener(object : MaxRewardedAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin RewardedAd onAdLoaded")
@@ -180,7 +179,6 @@ class AppLovinManager {
 
                 override fun onAdHidden(p0: MaxAd) {
                     Log.d(LOG, "AppLovin RewardedAd onAdHidden")
-                    rewardedAd?.loadAd()
                 }
 
                 override fun onAdClicked(p0: MaxAd) {
@@ -203,13 +201,50 @@ class AppLovinManager {
         }
     }
 
-    fun showRewardedAppLovin(context: Context, ORDER: Int = 0) {
-        if (rewardedAd != null && rewardedAd!!.isReady) {
-            rewardedAd?.showAd(context as Activity)
-            Log.d(LOG, "Rewarded ID AppLovin Show")
+    fun showRewardedAppLovin(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
+        val applovin_rewarded_ads = ServerPrefs(context).getItemModel()?.applovin_rewarded_ads
+        if (applovin_rewarded_ads.isNullOrEmpty()) {
+            Log.d(LOG, "AppLovin Rewarded ID Not set")
+            AdsManager().showRewardedAds(context, ORDER, callbackFunction)
         } else {
-            Log.d(LOG, "Rewarded ID AppLovin not loaded")
-//            AdsManager().showRewardedAds(context, ORDER)
+            Log.d(LOG, "Init AppLovin Rewarded ")
+            var isRewardEarned = false
+            var rewardedAd = MaxRewardedAd.getInstance(applovin_rewarded_ads, context as Activity)
+            rewardedAd?.setListener(object : MaxRewardedAdListener {
+                override fun onAdLoaded(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin RewardedAd onAdLoaded")
+                    rewardedAd.showAd(context)
+                }
+
+                override fun onAdDisplayed(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin RewardedAd onAdDisplayed")
+                }
+
+                override fun onAdHidden(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin RewardedAd onAdHidden")
+                    callbackFunction(isRewardEarned)
+                }
+
+                override fun onAdClicked(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin RewardedAd onAdClicked")
+                }
+
+                override fun onAdLoadFailed(p0: String, p1: MaxError) {
+                    Log.d(LOG, "AppLovin RewardedAd onAdLoadFailed")
+                    AdsManager().showRewardedAds(context, ORDER, callbackFunction)
+                }
+
+                override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
+                    Log.d(LOG, "AppLovin RewardedAd onAdDisplayFailed")
+                    AdsManager().showRewardedAds(context, ORDER, callbackFunction)
+                }
+
+                override fun onUserRewarded(p0: MaxAd, p1: MaxReward) {
+                    Log.d(LOG, "AppLovin RewardedAd onUserRewarded")
+                    isRewardEarned = true
+                }
+            })
+            rewardedAd?.loadAd()
         }
     }
 

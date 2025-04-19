@@ -125,7 +125,7 @@ class AdsManager {
                 array[ORDER] == ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, ORDER + 1, callbackFunction)
                 array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, ORDER + 1, callbackFunction)
                 array[ORDER] == ORDER_UNITY -> UnityManager().showRewardedUnity(context, ORDER + 1, callbackFunction)
-//                array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, ORDER + 1, callbackFunction)
+                array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, ORDER + 1, callbackFunction)
                 else -> showRewardedAds(context, ORDER + 1, callbackFunction)
             }
         } else {
