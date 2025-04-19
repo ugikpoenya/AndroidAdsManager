@@ -194,10 +194,38 @@ class AdmobManager {
     fun showRewardedAdmob(context: Context, ORDER: Int = 0) {
         if (admobRewardedAd != null) {
             Log.d(LOG, "Rewarded admob Show")
-            admobRewardedAd.let { ad ->
-                ad?.show((context as Activity)) { rewardItem ->
-                    Log.d(LOG, "RewardedAdmob User earned the reward.")
+            var isRewardEarned = false
+            admobRewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdClicked() {
+                    Log.d(LOG, "Admob Rewarded was clicked.")
                 }
+
+                override fun onAdDismissedFullScreenContent() {
+                    Log.d(LOG, "Admob Rewarded dismissed fullscreen content.")
+                    if (isRewardEarned) {
+                        Log.d(LOG, "User earned the reward")
+                    } else {
+                        Log.d(LOG, "User cancel ads.")
+                    }
+                    admobRewardedAd = null
+                    initRewardedAdmob(context)
+                }
+
+                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                    Log.e(LOG, "Admob Rewarded failed to show fullscreen content.")
+                }
+
+                override fun onAdImpression() {
+                    Log.d(LOG, "Admob Rewarded recorded an impression.")
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    Log.d(LOG, "Ad showed fullscreen content.")
+                }
+            }
+            admobRewardedAd?.show(context as Activity) { rewardItem ->
+                Log.d(LOG, "RewardedAdmob: User earned the reward.")
+                isRewardEarned = true
             }
         } else {
             Log.d(LOG, "Rewarded admob not loaded")
@@ -221,29 +249,6 @@ class AdmobManager {
                 override fun onAdLoaded(admobRewarded: RewardedAd) {
                     Log.d(LOG, "Admob Rewarded  was loaded.")
                     admobRewardedAd = admobRewarded
-                    admobRewarded.fullScreenContentCallback = object : FullScreenContentCallback() {
-                        override fun onAdClicked() {
-                            Log.d(LOG, "Admob Rewarded was clicked.")
-                        }
-
-                        override fun onAdDismissedFullScreenContent() {
-                            Log.d(LOG, "Admob Rewarded dismissed fullscreen content.")
-                            admobRewardedAd = null
-                            initRewardedAdmob(context)
-                        }
-
-                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                            Log.e(LOG, "Admob Rewarded failed to show fullscreen content.")
-                        }
-
-                        override fun onAdImpression() {
-                            Log.d(LOG, "Admob Rewarded recorded an impression.")
-                        }
-
-                        override fun onAdShowedFullScreenContent() {
-                            Log.d(LOG, "Ad showed fullscreen content.")
-                        }
-                    }
                 }
             })
         }
