@@ -16,7 +16,6 @@ import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.adsmanager.ads.AppLovin
 import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.adsmanager.ads.UnityManager
-import com.ugikpoenya.servermanager.ServerPrefs
 
 class MainActivity : AppCompatActivity() {
     val LOG = "LOG_ADS_MANAGER"
@@ -37,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showOpenAdsAdmob(view: View) {
-        Log.d(LOG, "showInterstitialAdmob")
+        Log.d(LOG, "showOpenAdsAdmob")
         AdmobManager().showOpenAdsAdmob(this)
     }
 
