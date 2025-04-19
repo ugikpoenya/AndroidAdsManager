@@ -10,8 +10,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ugikpoenya.adsmanager.ORDER_ADMOB
 import com.ugikpoenya.adsmanager.ORDER_FACEBOOK
+import com.ugikpoenya.adsmanager.ORDER_UNITY
 import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.adsmanager.ads.FacebookManager
+import com.ugikpoenya.adsmanager.ads.UnityManager
 import com.ugikpoenya.servermanager.ServerPrefs
 
 class MainActivity : AppCompatActivity() {
@@ -83,5 +85,22 @@ class MainActivity : AppCompatActivity() {
     fun showRewardedFacebook(view: View) {
         Log.d(LOG, "showRewardedFacebook")
         FacebookManager().showRewardedFacebook(this, ORDER_FACEBOOK)
+    }
+
+    fun initUnityBanner(view: View) {
+        Log.d(LOG, "initUnityBanner")
+        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
+        lyViewAds.removeAllViews()
+        UnityManager().initUnityBanner(this, lyViewAds, ORDER_UNITY)
+    }
+
+    fun showInterstitialUnity(view: View) {
+        Log.d(LOG, "showInterstitialUnity")
+        UnityManager().showInterstitialUnity(this, ORDER_UNITY)
+    }
+
+    fun showRewardedUnity(view: View) {
+        Log.d(LOG, "showRewardedUnity")
+        UnityManager().showRewardedUnity(this, ORDER_UNITY)
     }
 }

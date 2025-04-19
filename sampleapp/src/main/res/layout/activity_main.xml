@@ -151,7 +151,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="initAdmobBanner"
+                    android:onClick="initUnityBanner"
                     android:text="Banner" />
 
                 <Button
@@ -159,14 +159,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="5dp"
                     android:layout_weight="1"
-                    android:onClick="showInterstitialAdmob"
+                    android:onClick="showInterstitialUnity"
                     android:text="Interstitial" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="showRewardedAdmob"
+                    android:onClick="showRewardedUnity"
                     android:text="Rewarded" />
             </LinearLayout>
 
@@ -212,7 +212,9 @@
                 android:id="@+id/lyViewAds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp" />
+                android:layout_marginTop="30dp"
+                android:background="@color/black"
+                android:gravity="center_horizontal" />
 
         </LinearLayout>
     </ScrollView>
