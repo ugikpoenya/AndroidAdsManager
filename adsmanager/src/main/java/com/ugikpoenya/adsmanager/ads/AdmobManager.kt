@@ -143,6 +143,18 @@ class AdmobManager {
         val itemModel = ServerPrefs(context).getItemModel()
 
         if (admobInterstitial != null) {
+            admobInterstitial?.fullScreenContentCallback =
+                object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        Log.d(LOG, "Interstitial admob Ad was dismissed")
+                    }
+
+                    override fun onAdShowedFullScreenContent() {
+                        Log.d(LOG, "Interstitial admob Ad showed fullscreen content.")
+                        admobInterstitial = null
+                        initInterstitialAdmob(context)
+                    }
+                }
             admobInterstitial?.show(context as Activity)
             intervalCounter = itemModel?.interstitial_interval?.toInt() ?: 0
             Log.d(LOG, "Interstitial admob Show")
@@ -173,18 +185,6 @@ class AdmobManager {
                     override fun onAdLoaded(interstitialAd: InterstitialAd) {
                         Log.d(LOG, "Interstitial admob loaded")
                         admobInterstitial = interstitialAd
-                        admobInterstitial?.fullScreenContentCallback =
-                            object : FullScreenContentCallback() {
-                                override fun onAdDismissedFullScreenContent() {
-                                    Log.d(LOG, "Interstitial admob Ad was dismissed")
-                                }
-
-                                override fun onAdShowedFullScreenContent() {
-                                    Log.d(LOG, "Interstitial admob Ad showed fullscreen content.")
-                                    admobInterstitial = null
-                                    initInterstitialAdmob(context)
-                                }
-                            }
                     }
                 })
         }
