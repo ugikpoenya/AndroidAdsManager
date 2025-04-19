@@ -26,6 +26,8 @@ import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.intervalCounter
 import com.ugikpoenya.servermanager.ServerPrefs
 import androidx.core.view.isEmpty
+import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
+import com.ugikpoenya.adsmanager.R
 
 
 private var interstitialAd: MaxInterstitialAd? = null
@@ -176,6 +178,7 @@ class AppLovinManager {
             AdsManager().showInterstitial(context, ORDER)
         }
     }
+
     fun showRewardedAppLovin(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
         val applovin_rewarded_ads = ServerPrefs(context).getItemModel()?.applovin_rewarded_ads
         if (applovin_rewarded_ads.isNullOrEmpty()) {
@@ -254,10 +257,22 @@ class AppLovinManager {
                 }
 
                 override fun onNativeAdClicked(ad: MaxAd) {
-                    Log.d(LOG, "AppLovin onNativeAdLoadFailed")
+                    Log.d(LOG, "AppLovin onNativeAdClicked")
                 }
             })
-            nativeAdLoader.loadAd()
+
+            val binder: MaxNativeAdViewBinder = MaxNativeAdViewBinder.Builder(R.layout.native_ads_layout_applovin)
+                .setTitleTextViewId(R.id.title_text_view)
+                .setBodyTextViewId(R.id.body_text_view)
+                .setAdvertiserTextViewId(R.id.advertiser_text_view)
+                .setIconImageViewId(R.id.icon_image_view)
+                .setMediaContentViewGroupId(R.id.media_view_container)
+                .setOptionsContentViewGroupId(R.id.options_view)
+                .setStarRatingContentViewGroupId(R.id.star_rating_view)
+                .setCallToActionButtonId(R.id.cta_button)
+                .build()
+            var nativeAdView = MaxNativeAdView(binder, context)
+            nativeAdLoader.loadAd(nativeAdView)
         }
     }
 }
