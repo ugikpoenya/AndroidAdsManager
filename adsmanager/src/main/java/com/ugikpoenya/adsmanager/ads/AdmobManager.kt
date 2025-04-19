@@ -339,12 +339,15 @@ class AdmobManager {
                 if (consentInformation!!.canRequestAds()) {
                     Log.d(LOG, "GDPR canRequestAds")
                     initAdmobAds(context, function)
+                } else {
+                    Log.d(LOG, "GDPR canNotRequestAds")
+                    function()
                 }
 
-                function()
             }
         }, { requestConsentError: FormError ->
             Log.d(LOG, String.format("%s: %s", requestConsentError.errorCode, requestConsentError.message))
+            initAdmobAds(context, function)
         })
     }
 }

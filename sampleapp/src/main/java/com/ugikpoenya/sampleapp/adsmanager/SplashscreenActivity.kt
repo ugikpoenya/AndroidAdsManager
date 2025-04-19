@@ -27,7 +27,7 @@ class SplashscreenActivity : AppCompatActivity() {
             insets
         }
 
-        AdmobManager().addTestDeviceId("FCB60C60C8388604FEA5C6446B3246FA")
+//        AdmobManager().addTestDeviceId("FCB60C60C8388604FEA5C6446B3246FA")
 
         serverManager.setBaseUrl(this, "https://asia-southeast1-project-bangau.cloudfunctions.net/cms/api")
         serverManager.setApiKey(this, "DA8BB129F7C1ED5BD07046961C995A77")
