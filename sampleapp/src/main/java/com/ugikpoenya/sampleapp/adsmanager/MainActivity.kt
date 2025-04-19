@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.ORDER_ADMOB
 import com.ugikpoenya.adsmanager.ORDER_APPLOVIN
 import com.ugikpoenya.adsmanager.ORDER_FACEBOOK
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     fun showOpenAdsAdmob(view: View) {
         Log.d(LOG, "showOpenAdsAdmob")
-        AdmobManager().showOpenAdsAdmob(this)
+        AdsManager().showOpenAds(this)
     }
 
     fun showInterstitialAdmob(view: View) {

@@ -30,6 +30,11 @@ class AdsManager {
         AppLovin().initAppLovinAds(context)
     }
 
+    fun showOpenAds(context: Context, function: (() -> Unit)? = null) {
+        Log.d(LOG, "showOpenAds")
+        AdmobManager().showOpenAdsAdmob(context, function)
+    }
+
     fun initBanner(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
         val itemModel = ServerPrefs(context).getItemModel()
         var bannerView: Boolean? = true

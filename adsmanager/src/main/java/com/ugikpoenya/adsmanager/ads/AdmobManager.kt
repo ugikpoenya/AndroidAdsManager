@@ -265,7 +265,7 @@ class AdmobManager {
                         Log.d(LOG, "Admob Open Ads Loaded")
                         appOpenAd = ad
                         if (function !== null) {
-                            showOpenAdsAdmob(context, function)
+                            AdsManager().showOpenAds(context, function)
                         }
                     }
 
@@ -277,7 +277,7 @@ class AdmobManager {
         } else {
             Log.d(LOG, "Admob Open Ads Already Init")
             if (function !== null) {
-                showOpenAdsAdmob(context, function)
+                AdsManager().showOpenAds(context, function)
             }
         }
     }
