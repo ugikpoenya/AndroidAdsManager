@@ -58,7 +58,6 @@ class AppLovinManager {
             AppLovinSdk.getInstance(context).initialize(initConfig.build()) { sdkConfig ->
                 Log.d(LOG, "initAppLovinAds successfully")
                 initInterstitialAppLovin(context)
-                initRewardedAppLovin(context)
             }
         }
     }
@@ -177,49 +176,6 @@ class AppLovinManager {
             AdsManager().showInterstitial(context, ORDER)
         }
     }
-
-    fun initRewardedAppLovin(context: Context) {
-        val applovin_rewarded_ads = ServerPrefs(context).getItemModel()?.applovin_rewarded_ads
-        if (applovin_rewarded_ads.isNullOrEmpty()) {
-            Log.d(LOG, "AppLovin Rewarded ID Not set")
-        } else {
-            Log.d(LOG, "Init AppLovin Rewarded ")
-            var rewardedAd = MaxRewardedAd.getInstance(applovin_rewarded_ads, context as Activity)
-            rewardedAd?.setListener(object : MaxRewardedAdListener {
-                override fun onAdLoaded(p0: MaxAd) {
-                    Log.d(LOG, "AppLovin RewardedAd onAdLoaded")
-                }
-
-                override fun onAdDisplayed(p0: MaxAd) {
-                    Log.d(LOG, "AppLovin RewardedAd onAdDisplayed")
-                }
-
-                override fun onAdHidden(p0: MaxAd) {
-                    Log.d(LOG, "AppLovin RewardedAd onAdHidden")
-                }
-
-                override fun onAdClicked(p0: MaxAd) {
-                    Log.d(LOG, "AppLovin RewardedAd onAdClicked")
-                }
-
-                override fun onAdLoadFailed(p0: String, p1: MaxError) {
-                    Log.d(LOG, "AppLovin RewardedAd onAdLoadFailed")
-                    Log.d(LOG, p1.message)
-                }
-
-                override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
-                    Log.d(LOG, "AppLovin RewardedAd onAdDisplayFailed")
-                    Log.d(LOG, p1.message)
-                }
-
-                override fun onUserRewarded(p0: MaxAd, p1: MaxReward) {
-                    Log.d(LOG, "AppLovin RewardedAd onUserRewarded")
-                }
-            })
-            rewardedAd?.loadAd()
-        }
-    }
-
     fun showRewardedAppLovin(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
         val applovin_rewarded_ads = ServerPrefs(context).getItemModel()?.applovin_rewarded_ads
         if (applovin_rewarded_ads.isNullOrEmpty()) {
