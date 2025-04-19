@@ -8,7 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ugikpoenya.adsmanager.ORDER_ADMOB
+import com.ugikpoenya.adsmanager.ORDER_FACEBOOK
 import com.ugikpoenya.adsmanager.ads.AdmobManager
+import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.servermanager.ServerPrefs
 
 class MainActivity : AppCompatActivity() {
@@ -36,25 +39,49 @@ class MainActivity : AppCompatActivity() {
 
     fun showInterstitialAdmob(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
-        AdmobManager().showInterstitialAdmob(this, 0)
+        AdmobManager().showInterstitialAdmob(this, ORDER_ADMOB)
     }
 
     fun showRewardedAdmob(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
-        AdmobManager().showRewardedAdmob(this, 0)
+        AdmobManager().showRewardedAdmob(this, ORDER_ADMOB)
     }
 
     fun initAdmobBanner(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
-        AdmobManager().initAdmobBanner(this, lyViewAds, 0)
+        AdmobManager().initAdmobBanner(this, lyViewAds, ORDER_ADMOB)
     }
 
     fun initAdmobNative(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
-        AdmobManager().initAdmobNative(this, lyViewAds, 0, "home")
+        AdmobManager().initAdmobNative(this, lyViewAds, ORDER_ADMOB, "home")
+    }
+
+    fun initFacebookNative(view: View) {
+        Log.d(LOG, "initFacebookNative")
+        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
+        lyViewAds.removeAllViews()
+        FacebookManager().initFacebookNative(this, lyViewAds, ORDER_FACEBOOK, "home")
+    }
+
+    fun initFacebookBanner(view: View) {
+        Log.d(LOG, "initFacebookBanner")
+        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
+        lyViewAds.removeAllViews()
+        FacebookManager().initFacebookBanner(this, lyViewAds, ORDER_FACEBOOK)
+    }
+
+    fun showInterstitialFacebook(view: View) {
+        Log.d(LOG, "showInterstitialFacebook")
+        FacebookManager().showInterstitialFacebook(this, ORDER_FACEBOOK)
+    }
+
+    fun showRewardedFacebook(view: View) {
+        Log.d(LOG, "showRewardedFacebook")
+        FacebookManager().showRewardedFacebook(this, ORDER_FACEBOOK)
     }
 }

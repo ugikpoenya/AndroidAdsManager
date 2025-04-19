@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.RelativeLayout
 import com.ugikpoenya.adsmanager.ads.AdmobManager
+import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.servermanager.ServerPrefs
 
 var intervalCounter = 0
@@ -23,7 +24,7 @@ class AdsManager {
             AdmobManager().initAdmobAds(context)
             function()
         }
-
+        FacebookManager().initFacebookAds(context)
     }
 
     fun initBanner(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
@@ -43,7 +44,7 @@ class AdsManager {
                 if (array !== null && array.contains(ORDER)) {
                     when {
                         array[ORDER] == ORDER_ADMOB -> AdmobManager().initAdmobBanner(context, view, ORDER + 1, PAGE)
-//                        array[ORDER] == ORDER_FACEBOOK -> FacebookManager().initFacebookBanner(context, view, ORDER + 1, PAGE)
+                        array[ORDER] == ORDER_FACEBOOK -> FacebookManager().initFacebookBanner(context, view, ORDER + 1, PAGE)
 //                        array[ORDER] == ORDER_UNITY -> UnityManager().initUnityBanner(context, view, ORDER + 1, PAGE)
 //                        array[ORDER] == ORDER_APPLOVIN -> AppLovin().initAppLovinBanner(context, view, ORDER + 1, PAGE)
                         else -> initBanner(context, view, ORDER + 1, PAGE)
@@ -73,7 +74,7 @@ class AdsManager {
                 if (array != null && array.contains(ORDER)) {
                     when {
                         array[ORDER] == ORDER_ADMOB -> AdmobManager().initAdmobNative(context, view, ORDER + 1, PAGE)
-//                        array[ORDER] == ORDER_FACEBOOK -> FacebookManager().initFacebookNative(context, view, ORDER + 1, PAGE)
+                        array[ORDER] == ORDER_FACEBOOK -> FacebookManager().initFacebookNative(context, view, ORDER + 1, PAGE)
 //                        array[ORDER] == ORDER_APPLOVIN -> AppLovin().initAppLovinNative(context, view, ORDER + 1, PAGE)
                         else -> initNative(context, view, ORDER + 1, PAGE)
                     }
@@ -94,7 +95,7 @@ class AdsManager {
             if (array != null && array.contains(ORDER)) {
                 when {
                     array[ORDER] == ORDER_ADMOB -> AdmobManager().showInterstitialAdmob(context, ORDER + 1)
-//                    array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showInterstitialFacebook(context, ORDER + 1)
+                    array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showInterstitialFacebook(context, ORDER + 1)
 //                    array[ORDER] == ORDER_UNITY -> UnityManager().showInterstitialUnity(context, ORDER + 1)
 //                    array[ORDER] == ORDER_APPLOVIN -> AppLovin().showInterstitialAppLovin(context, ORDER + 1)
                     else -> showInterstitial(context, ORDER + 1)
@@ -114,7 +115,7 @@ class AdsManager {
         if (array != null && array.contains(ORDER)) {
             when {
                 array[ORDER] == ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, ORDER + 1)
-//                array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, ORDER + 1)
+                array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, ORDER + 1)
 //                array[ORDER] == ORDER_UNITY -> UnityManager().showRewardedUnity(context, ORDER + 1)
 //                array[ORDER] == ORDER_APPLOVIN -> AppLovin().showRewardedAppLovin(context, ORDER + 1)
                 else -> showRewardedAds(context, ORDER + 1)
