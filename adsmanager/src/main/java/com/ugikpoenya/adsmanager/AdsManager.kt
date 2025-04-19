@@ -23,8 +23,7 @@ class AdsManager {
         if (itemModel !== null && itemModel.admob_gdpr) {
             AdmobManager().initGdpr(context, function)
         } else {
-            AdmobManager().initAdmobAds(context)
-            function()
+            AdmobManager().initAdmobAds(context, function)
         }
         FacebookManager().initFacebookAds(context)
         UnityManager().initUnityAds(context)

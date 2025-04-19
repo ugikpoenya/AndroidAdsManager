@@ -36,7 +36,6 @@ import androidx.core.view.isEmpty
 var admobRewardedAd: RewardedAd? = null
 var admobInterstitial: InterstitialAd? = null
 private var appOpenAd: AppOpenAd? = null
-private var isShowingOpenAd = false
 var consentInformation: ConsentInformation? = null
 var ADMOB_TEST_DEVICE_ID: ArrayList<String> = ArrayList()
 
@@ -46,7 +45,7 @@ class AdmobManager {
         ADMOB_TEST_DEVICE_ID.add(test_id)
     }
 
-    fun initAdmobAds(context: Context) {
+    fun initAdmobAds(context: Context, function: () -> (Unit)) {
         Log.d(LOG, "Admob test device " + ADMOB_TEST_DEVICE_ID.size)
         val itemModel = ServerPrefs(context).getItemModel()
 
@@ -62,10 +61,9 @@ class AdmobManager {
                 Log.d(LOG, "initAdmobAds successfully")
                 initInterstitialAdmob(context)
                 initRewardedAdmob(context)
-                initOpenAdsAdmob(context)
+                initOpenAdsAdmob(context, function)
             }
         }
-        isShowingOpenAd = false
     }
 
     fun initAdmobBanner(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
@@ -252,11 +250,12 @@ class AdmobManager {
     }
 
     // Init open ads
-    fun initOpenAdsAdmob(context: Context) {
+    fun initOpenAdsAdmob(context: Context, function: (() -> Unit)? = null) {
         val itemModel = ServerPrefs(context).getItemModel()
         val request = AdRequest.Builder().build()
         if (itemModel?.admob_open_ads.isNullOrEmpty()) {
             Log.d(LOG, "Admob Open Ads Disable")
+            if (function !== null) function()
         } else if (appOpenAd == null) {
             Log.d(LOG, "Admob Open Ads Init")
             AppOpenAd.load(
@@ -265,7 +264,9 @@ class AdmobManager {
                     override fun onAdLoaded(ad: AppOpenAd) {
                         Log.d(LOG, "Admob Open Ads Loaded")
                         appOpenAd = ad
-                        showOpenAdsAdmob(context)
+                        if (function !== null) {
+                            showOpenAdsAdmob(context, function)
+                        }
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
@@ -273,27 +274,35 @@ class AdmobManager {
                     }
                 }
             )
+        } else {
+            Log.d(LOG, "Admob Open Ads Already Init")
+            if (function !== null) {
+                showOpenAdsAdmob(context, function)
+            }
         }
     }
 
-    fun showOpenAdsAdmob(context: Context) {
-        if (appOpenAd == null) Log.d(LOG, "Admob Open Ads  null.")
-        if (isShowingOpenAd) Log.d(LOG, "Admob Open Ads  Sudah tampil tadi, pisan ae.. ndak tuman.")
-
-        if (appOpenAd !== null && !isShowingOpenAd) {
+    fun showOpenAdsAdmob(context: Context, function: (() -> Unit)? = null) {
+        if (appOpenAd == null) {
+            Log.d(LOG, "Admob Open Ads  null.")
+            if (function !== null) function()
+        } else {
             Log.d(LOG, "Admob Open Ads  Will show ad.")
             val fullScreenContentCallback: FullScreenContentCallback =
                 object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
                         appOpenAd = null
                         Log.d(LOG, "Admob Open Ads  Dismissed")
+                        if (function !== null) function()
                         initOpenAdsAdmob(context)
                     }
 
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {}
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                        if (function !== null) function()
+                    }
+
                     override fun onAdShowedFullScreenContent() {
                         Log.d(LOG, "Admob Open Ads  Showed")
-                        isShowingOpenAd = true
                     }
                 }
             appOpenAd!!.fullScreenContentCallback = fullScreenContentCallback
@@ -329,7 +338,7 @@ class AdmobManager {
 
                 if (consentInformation!!.canRequestAds()) {
                     Log.d(LOG, "GDPR canRequestAds")
-                    initAdmobAds(context)
+                    initAdmobAds(context, function)
                 }
 
                 function()
