@@ -8,8 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ugikpoenya.adsmanager.AdsManager
-import com.ugikpoenya.adsmanager.ads.ADMOB_TEST_DEVICE_ID
 import com.ugikpoenya.adsmanager.ads.AdmobManager
+import com.ugikpoenya.adsmanager.ads.AppLovinManager
+import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.servermanager.ServerManager
 
 
@@ -27,7 +28,9 @@ class SplashscreenActivity : AppCompatActivity() {
             insets
         }
 
-//        AdmobManager().addTestDeviceId("FCB60C60C8388604FEA5C6446B3246FA")
+        AdmobManager().addTestDeviceId("FCB60C60C8388604FEA5C6446B3246FA")
+        FacebookManager().addTestDeviceId("FCB60C60C8388604FEA5C6446B3246FA")
+        AppLovinManager().addTestDeviceId("8a254317-35a1-4c56-82d3-10ca1ad1abe1")
 
         serverManager.setBaseUrl(this, "https://asia-southeast1-project-bangau.cloudfunctions.net/cms/api")
         serverManager.setApiKey(this, "DA8BB129F7C1ED5BD07046961C995A77")

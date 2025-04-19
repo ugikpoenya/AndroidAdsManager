@@ -29,9 +29,14 @@ import androidx.core.view.isEmpty
 
 
 private var interstitialAd: MaxInterstitialAd? = null
+var APPLOVIN_TEST_DEVICE_ID: ArrayList<String> = ArrayList()
 
 class AppLovinManager {
     val LOG = "LOG_ADS_APPLOVIN"
+    fun addTestDeviceId(test_id: String) {
+        APPLOVIN_TEST_DEVICE_ID.add(test_id)
+    }
+
     fun initAppLovinAds(context: Context) {
         val itemModel = ServerPrefs(context).getItemModel()
 
@@ -39,10 +44,18 @@ class AppLovinManager {
             Log.d(LOG, "initAppLovinAds disable")
         } else {
             // Create the initialization configuration
-            val initConfig = AppLovinSdkInitializationConfiguration.builder(itemModel.applovin_sdk_key).setMediationProvider(AppLovinMediationProvider.MAX).build()
+            val initConfig = AppLovinSdkInitializationConfiguration
+                .builder(itemModel.applovin_sdk_key)
+                .setMediationProvider(AppLovinMediationProvider.MAX)
+
+            if (FACEBOOK_TEST_DEVICE_ID.size > 0) {
+                initConfig.testDeviceAdvertisingIds = APPLOVIN_TEST_DEVICE_ID
+            }
+            Log.d(LOG, "initAppLovinAds Test " + APPLOVIN_TEST_DEVICE_ID.size)
+
 
             // Initialize the SDK with the configuration
-            AppLovinSdk.getInstance(context).initialize(initConfig) { sdkConfig ->
+            AppLovinSdk.getInstance(context).initialize(initConfig.build()) { sdkConfig ->
                 Log.d(LOG, "initAppLovinAds successfully")
                 initInterstitialAppLovin(context)
                 initRewardedAppLovin(context)

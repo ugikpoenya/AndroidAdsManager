@@ -48,6 +48,8 @@ class FacebookManager {
             if (FACEBOOK_TEST_DEVICE_ID.size > 0) {
                 AdSettings.addTestDevices(FACEBOOK_TEST_DEVICE_ID)
             }
+            Log.d(LOG, "initFacebookAds Test " + FACEBOOK_TEST_DEVICE_ID.size)
+
             AudienceNetworkAds
                 .buildInitSettings(context)
                 .withInitListener {
