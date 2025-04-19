@@ -166,13 +166,14 @@ class FacebookManager {
         }
     }
 
-    fun showRewardedFacebook(context: Context, ORDER: Int = 0) {
+    fun showRewardedFacebook(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
         if (facebookRewarded != null && facebookRewarded!!.isAdLoaded && !facebookRewarded!!.isAdInvalidated) {
             facebookRewarded?.show()
             Log.d(LOG, "Rewarded ID Facebook Show")
+            callbackFunction(true)
         } else {
             Log.d(LOG, "Rewarded ID Facebook not loaded")
-            AdsManager().showRewardedAds(context, ORDER)
+            AdsManager().showRewardedAds(context, ORDER, callbackFunction)
         }
     }
 

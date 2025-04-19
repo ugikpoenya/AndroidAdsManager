@@ -114,7 +114,7 @@ class AdsManager {
         }
     }
 
-    fun showRewardedAds(context: Context, ORDER: Int = 0) {
+    fun showRewardedAds(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
         val itemModel = ServerPrefs(context).getItemModel()
         Log.d("LOG", "Show  RewardedAds $ORDER")
         var priority: String? = itemModel?.interstitial_priority
@@ -122,15 +122,15 @@ class AdsManager {
         val array = priority?.split(",")?.map { it.toInt() }
         if (array != null && array.contains(ORDER)) {
             when {
-                array[ORDER] == ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, ORDER + 1)
-                array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, ORDER + 1)
-                array[ORDER] == ORDER_UNITY -> UnityManager().showRewardedUnity(context, ORDER + 1)
-                array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, ORDER + 1)
-                else -> showRewardedAds(context, ORDER + 1)
+                array[ORDER] == ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, ORDER + 1, callbackFunction)
+//                array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, ORDER + 1, callbackFunction)
+                array[ORDER] == ORDER_UNITY -> UnityManager().showRewardedUnity(context, ORDER + 1, callbackFunction)
+//                array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, ORDER + 1, callbackFunction)
+                else -> showRewardedAds(context, ORDER + 1, callbackFunction)
             }
         } else {
             Log.d("LOG", "All rewarded null")
-            showInterstitial(context, 0)
+            callbackFunction(false)
         }
     }
 

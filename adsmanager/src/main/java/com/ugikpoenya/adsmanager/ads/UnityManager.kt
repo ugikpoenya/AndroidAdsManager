@@ -161,11 +161,11 @@ class UnityManager {
         }
     }
 
-    fun showRewardedUnity(context: Context, ORDER: Int = 0) {
+    fun showRewardedUnity(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
         val unity_rewarded_ads = ServerPrefs(context).getItemModel()?.unity_rewarded_ads
         if (unity_rewarded_ads.isNullOrEmpty()) {
             Log.d(LOG, "Unity RewardedAds ID Not set")
-            AdsManager().showRewardedAds(context, ORDER)
+            AdsManager().showRewardedAds(context, ORDER, callbackFunction)
         } else {
             Log.d(LOG, "Init Unity Ads RewardedAds ")
             UnityAds.show(context as Activity, unity_rewarded_ads, UnityAdsShowOptions(), object : IUnityAdsShowListener {
@@ -175,7 +175,7 @@ class UnityManager {
                     p2: String?,
                 ) {
                     Log.d(LOG, "RewardedAds onUnityAdsShowFailure")
-                    AdsManager().showRewardedAds(context, ORDER)
+                    AdsManager().showRewardedAds(context, ORDER, callbackFunction)
                 }
 
                 override fun onUnityAdsShowStart(p0: String?) {
@@ -191,6 +191,7 @@ class UnityManager {
                     p1: UnityAds.UnityAdsShowCompletionState,
                 ) {
                     Log.d(LOG, "RewardedAds onUnityAdsShowComplete")
+                    callbackFunction(true)
                     initRewardedUnity(context)
                 }
             })

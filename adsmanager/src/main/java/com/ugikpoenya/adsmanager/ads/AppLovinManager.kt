@@ -209,7 +209,7 @@ class AppLovinManager {
             Log.d(LOG, "Rewarded ID AppLovin Show")
         } else {
             Log.d(LOG, "Rewarded ID AppLovin not loaded")
-            AdsManager().showRewardedAds(context, ORDER)
+//            AdsManager().showRewardedAds(context, ORDER)
         }
     }
 

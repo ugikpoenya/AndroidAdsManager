@@ -191,7 +191,7 @@ class AdmobManager {
     }
 
 
-    fun showRewardedAdmob(context: Context, ORDER: Int = 0) {
+    fun showRewardedAdmob(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
         if (admobRewardedAd != null) {
             Log.d(LOG, "Rewarded admob Show")
             var isRewardEarned = false
@@ -204,7 +204,9 @@ class AdmobManager {
                     Log.d(LOG, "Admob Rewarded dismissed fullscreen content.")
                     if (isRewardEarned) {
                         Log.d(LOG, "User earned the reward")
+                        callbackFunction(true)
                     } else {
+                        callbackFunction(false)
                         Log.d(LOG, "User cancel ads.")
                     }
                     admobRewardedAd = null
@@ -229,7 +231,7 @@ class AdmobManager {
             }
         } else {
             Log.d(LOG, "Rewarded admob not loaded")
-            AdsManager().showRewardedAds(context, ORDER)
+            AdsManager().showRewardedAds(context, ORDER, callbackFunction)
         }
     }
 

@@ -47,19 +47,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showRewardedAdmob(view: View) {
-        Log.d(LOG, "showInterstitialAdmob")
-        AdsManager().showRewardedAds(this, ORDER_ADMOB)
+        Log.d(LOG, "showRewardedAdmob")
+        AdsManager().showRewardedAds(this, ORDER_ADMOB) { isRewarded -> Log.d(LOG, "isRewarded : $isRewarded") }
     }
 
     fun initAdmobBanner(view: View) {
-        Log.d(LOG, "showInterstitialAdmob")
+        Log.d(LOG, "initAdmobBanner")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
         AdsManager().initBanner(this, lyViewAds, ORDER_ADMOB)
     }
 
     fun initAdmobNative(view: View) {
-        Log.d(LOG, "showInterstitialAdmob")
+        Log.d(LOG, "initAdmobNative")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
         AdsManager().initNative(this, lyViewAds, ORDER_ADMOB, "home")
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
     fun showRewardedFacebook(view: View) {
         Log.d(LOG, "showRewardedFacebook")
-        FacebookManager().showRewardedFacebook(this, ORDER_FACEBOOK)
+        FacebookManager().showRewardedFacebook(this, ORDER_FACEBOOK) { isRewarded -> Log.d(LOG, "isRewarded : $isRewarded") }
     }
 
     fun initUnityBanner(view: View) {
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
     fun showRewardedUnity(view: View) {
         Log.d(LOG, "showRewardedUnity")
-        UnityManager().showRewardedUnity(this, ORDER_UNITY)
+        UnityManager().showRewardedUnity(this, ORDER_UNITY) { isRewarded -> Log.d(LOG, "isRewarded : $isRewarded") }
     }
 
     fun initAppLovinNative(view: View) {
