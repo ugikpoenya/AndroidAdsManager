@@ -14,7 +14,7 @@ import com.ugikpoenya.adsmanager.ORDER_APPLOVIN
 import com.ugikpoenya.adsmanager.ORDER_FACEBOOK
 import com.ugikpoenya.adsmanager.ORDER_UNITY
 import com.ugikpoenya.adsmanager.ads.AdmobManager
-import com.ugikpoenya.adsmanager.ads.AppLovin
+import com.ugikpoenya.adsmanager.ads.AppLovinManager
 import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.adsmanager.ads.UnityManager
 
@@ -110,23 +110,23 @@ class MainActivity : AppCompatActivity() {
         Log.d(LOG, "initAppLovinNative")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
-        AppLovin().initAppLovinNative(this, lyViewAds, ORDER_APPLOVIN, "home")
+        AppLovinManager().initAppLovinNative(this, lyViewAds, ORDER_APPLOVIN, "home")
     }
 
     fun initAppLovinBanner(view: View) {
         Log.d(LOG, "initAppLovinBanner")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
-        AppLovin().initAppLovinBanner(this, lyViewAds, ORDER_APPLOVIN)
+        AppLovinManager().initAppLovinBanner(this, lyViewAds, ORDER_APPLOVIN)
     }
 
     fun showInterstitialAppLovin(view: View) {
         Log.d(LOG, "showInterstitialAppLovin")
-        AppLovin().showInterstitialAppLovin(this, ORDER_APPLOVIN)
+        AppLovinManager().showInterstitialAppLovin(this, ORDER_APPLOVIN)
     }
 
     fun showRewardedAppLovin(view: View) {
         Log.d(LOG, "showRewardedAppLovin")
-        AppLovin().showRewardedAppLovin(this, ORDER_APPLOVIN)
+        AppLovinManager().showRewardedAppLovin(this, ORDER_APPLOVIN)
     }
 }

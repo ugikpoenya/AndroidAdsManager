@@ -31,7 +31,7 @@ import androidx.core.view.isEmpty
 private var interstitialAd: MaxInterstitialAd? = null
 private var rewardedAd: MaxRewardedAd? = null
 
-class AppLovin {
+class AppLovinManager {
     val LOG = "LOG_ADS_APPLOVIN"
     fun initAppLovinAds(context: Context) {
         val itemModel = ServerPrefs(context).getItemModel()
