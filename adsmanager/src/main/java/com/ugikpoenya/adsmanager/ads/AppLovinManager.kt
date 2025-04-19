@@ -26,7 +26,9 @@ import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.intervalCounter
 import com.ugikpoenya.servermanager.ServerPrefs
 import androidx.core.view.isEmpty
+import com.applovin.mediation.MaxAdFormat
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
+import com.applovin.sdk.AppLovinSdkUtils
 import com.ugikpoenya.adsmanager.R
 
 
@@ -234,45 +236,55 @@ class AppLovinManager {
             Log.d(LOG, "AppLovin Native ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.isEmpty()) {
-            var nativeAd: MaxAd? = null
-            val nativeAdLoader = MaxNativeAdLoader(applovin_native, context)
-            nativeAdLoader.setNativeAdListener(object : MaxNativeAdListener() {
-                override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView?, ad: MaxAd) {
-                    // Clean up any pre-existing native ad to prevent memory leaks.
-                    if (nativeAd != null) {
-                        nativeAdLoader.destroy(nativeAd)
-                    }
-                    nativeAd = ad
-                    Log.d(LOG, "AppLovin onNativeAdLoaded")
-                    // Add ad view to view.
-                    VIEW.removeAllViews()
-                    VIEW.addView(nativeAdView)
+            Log.d(LOG, "AppLovin MREC Init")
+            val adView = MaxAdView(applovin_native, MaxAdFormat.MREC, context)
+            adView.setListener(object : MaxAdViewAdListener {
+                override fun onAdLoaded(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin MREC onAdLoaded")
                 }
 
-                override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
-                    Log.d(LOG, "AppLovin onNativeAdLoadFailed")
-                    Log.d(LOG, error.message)
+                override fun onAdDisplayed(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin MREC onAdDisplayed")
+                }
+
+                override fun onAdHidden(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin MREC onAdHidden")
+                }
+
+                override fun onAdClicked(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin MREC onAdClicked")
+                }
+
+                override fun onAdLoadFailed(p0: String, p1: MaxError) {
+                    Log.d(LOG, "AppLovin MREC onAdLoadFailed")
+                    Log.d(LOG, p1.message)
                     VIEW.removeAllViews()
                     AdsManager().initNative(context, VIEW, ORDER, PAGE)
                 }
 
-                override fun onNativeAdClicked(ad: MaxAd) {
-                    Log.d(LOG, "AppLovin onNativeAdClicked")
+                override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
+                    Log.d(LOG, "AppLovin MREC onAdDisplayFailed")
+                    Log.d(LOG, p1.message)
                 }
+
+                override fun onAdExpanded(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin MREC onAdExpanded")
+                }
+
+                override fun onAdCollapsed(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin MREC onAdCollapsed")
+                }
+
             })
 
-            val binder: MaxNativeAdViewBinder = MaxNativeAdViewBinder.Builder(R.layout.native_ads_layout_applovin)
-                .setTitleTextViewId(R.id.title_text_view)
-                .setBodyTextViewId(R.id.body_text_view)
-                .setAdvertiserTextViewId(R.id.advertiser_text_view)
-                .setIconImageViewId(R.id.icon_image_view)
-                .setMediaContentViewGroupId(R.id.media_view_container)
-                .setOptionsContentViewGroupId(R.id.options_view)
-                .setStarRatingContentViewGroupId(R.id.star_rating_view)
-                .setCallToActionButtonId(R.id.cta_button)
-                .build()
-            var nativeAdView = MaxNativeAdView(binder, context)
-            nativeAdLoader.loadAd(nativeAdView)
+            val width = AppLovinSdkUtils.dpToPx(context, 300)
+            // Banner height on phones and tablets is 50 and 90, respectively
+            val heightPx = AppLovinSdkUtils.dpToPx(context, 250)
+            adView.layoutParams = FrameLayout.LayoutParams(width, heightPx)
+            // Set background or background color for banners to be fully functional
+            adView.setBackgroundColor(Color.BLACK)
+            VIEW.addView(adView)
+            adView.loadAd()
         }
     }
 }
