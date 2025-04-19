@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.servermanager.ServerManager
 
 
@@ -28,8 +29,10 @@ class SplashscreenActivity : AppCompatActivity() {
         serverManager.setApiKey(this, "DA8BB129F7C1ED5BD07046961C995A77")
         serverManager.getApiResponse(this) { response ->
             Log.d(LOG, response?.name.toString())
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            AdsManager().initAds(this) {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
         }
     }
 }

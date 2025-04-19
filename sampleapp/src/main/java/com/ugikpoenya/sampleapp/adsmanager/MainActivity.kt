@@ -1,11 +1,13 @@
 package com.ugikpoenya.sampleapp.adsmanager
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ugikpoenya.sampleapp.adsmanager.R
+import com.ugikpoenya.servermanager.ServerPrefs
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,5 +19,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val itemModel = ServerPrefs(this).getItemModel()
+        Log.d("LOG", itemModel?.admob_banner.toString())
     }
 }

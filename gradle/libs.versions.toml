@@ -1,6 +1,6 @@
 [versions]
 agp = "8.9.1"
-androidservermanager = "1.0.0"
+androidservermanager = "1.0.2"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
