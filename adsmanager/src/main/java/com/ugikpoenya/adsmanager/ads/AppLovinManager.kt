@@ -78,12 +78,14 @@ class AppLovinManager {
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     Log.d(LOG, "AppLovin Banner onAdLoadFailed")
+                    Log.d(LOG, p1.message)
                     VIEW.removeAllViews()
                     AdsManager().initBanner(context, VIEW, ORDER, PAGE)
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     Log.d(LOG, "AppLovin Banner onAdDisplayFailed")
+                    Log.d(LOG, p1.message)
                 }
 
                 override fun onAdExpanded(p0: MaxAd) {
@@ -135,10 +137,12 @@ class AppLovinManager {
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     Log.d(LOG, "AppLovin Interstitial onAdLoadFailed")
+                    Log.d(LOG, p1.message)
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     Log.d(LOG, "AppLovin Interstitial onAdDisplayFailed")
+                    Log.d(LOG, p1.message)
                 }
             })
 
@@ -187,10 +191,12 @@ class AppLovinManager {
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     Log.d(LOG, "AppLovin RewardedAd onAdLoadFailed")
+                    Log.d(LOG, p1.message)
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     Log.d(LOG, "AppLovin RewardedAd onAdDisplayFailed")
+                    Log.d(LOG, p1.message)
                 }
 
                 override fun onUserRewarded(p0: MaxAd, p1: MaxReward) {
@@ -231,11 +237,13 @@ class AppLovinManager {
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     Log.d(LOG, "AppLovin RewardedAd onAdLoadFailed")
+                    Log.d(LOG, p1.message)
                     AdsManager().showRewardedAds(context, ORDER, callbackFunction)
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     Log.d(LOG, "AppLovin RewardedAd onAdDisplayFailed")
+                    Log.d(LOG, p1.message)
                     AdsManager().showRewardedAds(context, ORDER, callbackFunction)
                 }
 
@@ -271,6 +279,7 @@ class AppLovinManager {
 
                 override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
                     Log.d(LOG, "AppLovin onNativeAdLoadFailed")
+                    Log.d(LOG, error.message)
                     VIEW.removeAllViews()
                     AdsManager().initNative(context, VIEW, ORDER, PAGE)
                 }
