@@ -27,7 +27,6 @@ import androidx.core.view.isEmpty
 
 
 var facebookInterstitial: InterstitialAd? = null
-var facebookRewarded: RewardedVideoAd? = null
 var FACEBOOK_TEST_DEVICE_ID: ArrayList<String> = ArrayList()
 
 class FacebookManager {
@@ -54,7 +53,6 @@ class FacebookManager {
                 .withInitListener {
                     Log.d(LOG, "Facebook Ads Initialized")
                     initFacebookInterstitial(context)
-                    initRewardedFacebook(context)
                 }.initialize()
         }
     }
@@ -167,30 +165,23 @@ class FacebookManager {
     }
 
     fun showRewardedFacebook(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
-        if (facebookRewarded != null && facebookRewarded!!.isAdLoaded && !facebookRewarded!!.isAdInvalidated) {
-            facebookRewarded?.show()
-            Log.d(LOG, "Rewarded ID Facebook Show")
-            callbackFunction(true)
-        } else {
-            Log.d(LOG, "Rewarded ID Facebook not loaded")
-            AdsManager().showRewardedAds(context, ORDER, callbackFunction)
-        }
-    }
-
-    fun initRewardedFacebook(context: Context) {
         val itemModel = ServerPrefs(context).getItemModel()
         if (itemModel?.facebook_rewarded_ads.isNullOrEmpty()) {
             Log.d(LOG, "Facebook Rewarded ID Not set")
+            AdsManager().showRewardedAds(context, ORDER, callbackFunction)
         } else {
             Log.d(LOG, "Init Facebook Rewarded ")
-            facebookRewarded = RewardedVideoAd(context, itemModel.facebook_rewarded_ads)
+            var isRewardEarned = false
+            var facebookRewarded = RewardedVideoAd(context, itemModel.facebook_rewarded_ads)
             val rewardedVideoAdListener: RewardedVideoAdListener = object : RewardedVideoAdListener {
                 override fun onError(ad: Ad, error: AdError) {
                     Log.d(LOG, "Facebook Rewarded video ad failed to load: " + error.errorMessage)
+                    AdsManager().showRewardedAds(context, ORDER, callbackFunction)
                 }
 
                 override fun onAdLoaded(ad: Ad) {
                     Log.d(LOG, "Facebook Rewarded video ad is loaded and ready to be displayed!")
+                    facebookRewarded.show()
                 }
 
                 override fun onAdClicked(ad: Ad) {
@@ -203,20 +194,62 @@ class FacebookManager {
 
                 override fun onRewardedVideoCompleted() {
                     Log.d(LOG, "Facebook Rewarded video completed!")
-                    initRewardedFacebook(context)
+                    isRewardEarned = true
                 }
 
                 override fun onRewardedVideoClosed() {
                     Log.d(LOG, "Facebook Rewarded video ad closed!")
+                    callbackFunction(isRewardEarned)
                 }
             }
-            facebookRewarded?.loadAd(
-                facebookRewarded?.buildLoadAdConfig()
+            facebookRewarded.loadAd(
+                facebookRewarded.buildLoadAdConfig()
                     ?.withAdListener(rewardedVideoAdListener)
                     ?.build()
             )
         }
     }
+
+//    fun initRewardedFacebook(context: Context) {
+//        val itemModel = ServerPrefs(context).getItemModel()
+//        if (itemModel?.facebook_rewarded_ads.isNullOrEmpty()) {
+//            Log.d(LOG, "Facebook Rewarded ID Not set")
+//        } else {
+//            Log.d(LOG, "Init Facebook Rewarded ")
+//            var facebookRewarded = RewardedVideoAd(context, itemModel.facebook_rewarded_ads)
+//            val rewardedVideoAdListener: RewardedVideoAdListener = object : RewardedVideoAdListener {
+//                override fun onError(ad: Ad, error: AdError) {
+//                    Log.d(LOG, "Facebook Rewarded video ad failed to load: " + error.errorMessage)
+//                }
+//
+//                override fun onAdLoaded(ad: Ad) {
+//                    Log.d(LOG, "Facebook Rewarded video ad is loaded and ready to be displayed!")
+//                }
+//
+//                override fun onAdClicked(ad: Ad) {
+//                    Log.d(LOG, "Facebook Rewarded video ad clicked!")
+//                }
+//
+//                override fun onLoggingImpression(ad: Ad) {
+//                    Log.d(LOG, "Facebook Rewarded video ad impression logged!")
+//                }
+//
+//                override fun onRewardedVideoCompleted() {
+//                    Log.d(LOG, "Facebook Rewarded video completed!")
+//                    initRewardedFacebook(context)
+//                }
+//
+//                override fun onRewardedVideoClosed() {
+//                    Log.d(LOG, "Facebook Rewarded video ad closed!")
+//                }
+//            }
+//            facebookRewarded?.loadAd(
+//                facebookRewarded?.buildLoadAdConfig()
+//                    ?.withAdListener(rewardedVideoAdListener)
+//                    ?.build()
+//            )
+//        }
+//    }
 
 
     fun initFacebookNativeBanner(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
