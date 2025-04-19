@@ -188,7 +188,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="initAdmobBanner"
+                    android:onClick="initAppLovinNative"
+                    android:text="Native" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingHorizontal="5dp">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="initAppLovinBanner"
                     android:text="Banner" />
 
                 <Button
@@ -196,14 +210,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="5dp"
                     android:layout_weight="1"
-                    android:onClick="showInterstitialAdmob"
+                    android:onClick="showInterstitialAppLovin"
                     android:text="Interstitial" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="showRewardedAdmob"
+                    android:onClick="showRewardedAppLovin"
                     android:text="Rewarded" />
             </LinearLayout>
 

@@ -38,7 +38,7 @@ dependencies {
     implementation ("com.google.android.ump:user-messaging-platform:2.2.0")
     implementation ("com.facebook.android:audience-network-sdk:6.16.0")
     implementation ("com.unity3d.ads:unity-ads:4.9.2")
-    implementation ("com.applovin:applovin-sdk:+")
+    implementation ("com.applovin:applovin-sdk:13.2.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -9,9 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ugikpoenya.adsmanager.ORDER_ADMOB
+import com.ugikpoenya.adsmanager.ORDER_APPLOVIN
 import com.ugikpoenya.adsmanager.ORDER_FACEBOOK
 import com.ugikpoenya.adsmanager.ORDER_UNITY
 import com.ugikpoenya.adsmanager.ads.AdmobManager
+import com.ugikpoenya.adsmanager.ads.AppLovin
 import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.adsmanager.ads.UnityManager
 import com.ugikpoenya.servermanager.ServerPrefs
@@ -102,5 +104,29 @@ class MainActivity : AppCompatActivity() {
     fun showRewardedUnity(view: View) {
         Log.d(LOG, "showRewardedUnity")
         UnityManager().showRewardedUnity(this, ORDER_UNITY)
+    }
+
+    fun initAppLovinNative(view: View) {
+        Log.d(LOG, "initAppLovinNative")
+        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
+        lyViewAds.removeAllViews()
+        AppLovin().initAppLovinNative(this, lyViewAds, ORDER_APPLOVIN, "home")
+    }
+
+    fun initAppLovinBanner(view: View) {
+        Log.d(LOG, "initAppLovinBanner")
+        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
+        lyViewAds.removeAllViews()
+        AppLovin().initAppLovinBanner(this, lyViewAds, ORDER_APPLOVIN)
+    }
+
+    fun showInterstitialAppLovin(view: View) {
+        Log.d(LOG, "showInterstitialAppLovin")
+        AppLovin().showInterstitialAppLovin(this, ORDER_APPLOVIN)
+    }
+
+    fun showRewardedAppLovin(view: View) {
+        Log.d(LOG, "showRewardedAppLovin")
+        AppLovin().showRewardedAppLovin(this, ORDER_APPLOVIN)
     }
 }
