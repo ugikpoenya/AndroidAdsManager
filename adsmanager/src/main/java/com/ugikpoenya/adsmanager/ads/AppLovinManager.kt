@@ -228,7 +228,7 @@ class AppLovinManager {
     fun initAppLovinNative(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
         val applovin_native = ServerPrefs(context).getItemModel()?.applovin_native
         if (applovin_native.isNullOrEmpty()) {
-            Log.d(LOG, "Facebook Native ID not set ")
+            Log.d(LOG, "AppLovin Native ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.isEmpty()) {
             var nativeAd: MaxAd? = null
