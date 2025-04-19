@@ -30,6 +30,7 @@ import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.R
 import com.ugikpoenya.adsmanager.intervalCounter
 import com.ugikpoenya.servermanager.ServerPrefs
+import androidx.core.view.isEmpty
 
 
 var admobRewardedAd: RewardedAd? = null
@@ -72,7 +73,7 @@ class AdmobManager {
         if (admob_banner.isNullOrEmpty()) {
             Log.d(LOG, "Admob Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.childCount == 0) {
+        } else if (VIEW.isEmpty()) {
             val outMetrics = Resources.getSystem().displayMetrics
             val widthPixels = outMetrics.widthPixels.toFloat()
             val density = outMetrics.density
@@ -105,7 +106,7 @@ class AdmobManager {
         if (admob_native.isNullOrEmpty()) {
             Log.d(LOG, "Admob Native ID Not Set")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.childCount == 0) {
+        } else if (VIEW.isEmpty()) {
             Log.d(LOG, "Admob Native Init")
             val adLoader = AdLoader.Builder(context, admob_native)
                 .forNativeAd { nativeAd ->
@@ -145,15 +146,7 @@ class AdmobManager {
 
         if (admobInterstitial != null) {
             admobInterstitial?.show(context as Activity)
-            if (itemModel?.interstitial_interval == null) {
-                if (itemModel?.DEFAULT_INTERSTITIAL_INTERVAL == null) {
-                    intervalCounter = 0
-                } else {
-                    intervalCounter = itemModel.DEFAULT_INTERSTITIAL_INTERVAL
-                }
-            } else {
-                intervalCounter = itemModel.interstitial_interval!!.toInt()
-            }
+            intervalCounter = itemModel?.interstitial_interval?.toInt() ?: 0
             Log.d(LOG, "Interstitial admob Show")
         } else {
             Log.d(LOG, "Interstitial admob not loaded")
@@ -171,7 +164,7 @@ class AdmobManager {
             val adRequest = AdRequest.Builder().build()
             InterstitialAd.load(
                 context,
-                itemModel?.admob_interstitial.toString(),
+                itemModel.admob_interstitial.toString(),
                 adRequest,
                 object : InterstitialAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -221,7 +214,7 @@ class AdmobManager {
         } else {
             Log.d(LOG, "Init Admob Rewarded ")
             val adRequest = AdRequest.Builder().build()
-            RewardedAd.load(context, itemModel?.admob_rewarded_ads.toString(), adRequest, object : RewardedAdLoadCallback() {
+            RewardedAd.load(context, itemModel.admob_rewarded_ads.toString(), adRequest, object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Log.d(LOG, "Admob Rewarded " + adError.message)
                     admobRewardedAd = null
@@ -267,7 +260,7 @@ class AdmobManager {
         } else if (appOpenAd == null) {
             Log.d(LOG, "Admob Open Ads Init")
             AppOpenAd.load(
-                context, itemModel?.admob_open_ads.toString(), request,
+                context, itemModel.admob_open_ads.toString(), request,
                 object : AppOpenAd.AppOpenAdLoadCallback() {
                     override fun onAdLoaded(ad: AppOpenAd) {
                         Log.d(LOG, "Admob Open Ads Loaded")

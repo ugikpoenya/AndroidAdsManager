@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ugikpoenya.adsmanager.AdsManager
+import com.ugikpoenya.adsmanager.ads.ADMOB_TEST_DEVICE_ID
+import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.servermanager.ServerManager
 
 
@@ -24,6 +26,8 @@ class SplashscreenActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        AdmobManager().addTestDeviceId("FCB60C60C8388604FEA5C6446B3246FA")
 
         serverManager.setBaseUrl(this, "https://asia-southeast1-project-bangau.cloudfunctions.net/cms/api")
         serverManager.setApiKey(this, "DA8BB129F7C1ED5BD07046961C995A77")
