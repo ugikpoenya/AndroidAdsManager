@@ -43,26 +43,26 @@ class MainActivity : AppCompatActivity() {
 
     fun showInterstitialAdmob(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
-        AdmobManager().showInterstitialAdmob(this, ORDER_ADMOB)
+        AdsManager().showInterstitial(this, ORDER_ADMOB)
     }
 
     fun showRewardedAdmob(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
-        AdmobManager().showRewardedAdmob(this, ORDER_ADMOB)
+        AdsManager().showRewardedAds(this, ORDER_ADMOB)
     }
 
     fun initAdmobBanner(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
-        AdmobManager().initAdmobBanner(this, lyViewAds, ORDER_ADMOB)
+        AdsManager().initBanner(this, lyViewAds, ORDER_ADMOB)
     }
 
     fun initAdmobNative(view: View) {
         Log.d(LOG, "showInterstitialAdmob")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
-        AdmobManager().initAdmobNative(this, lyViewAds, ORDER_ADMOB, "home")
+        AdsManager().initNative(this, lyViewAds, ORDER_ADMOB, "home")
     }
 
     fun initFacebookNative(view: View) {
