@@ -31,6 +31,7 @@ import com.ugikpoenya.adsmanager.R
 import com.ugikpoenya.adsmanager.intervalCounter
 import com.ugikpoenya.servermanager.ServerPrefs
 import androidx.core.view.isEmpty
+import com.ugikpoenya.servermanager.ServerManager
 
 
 var admobRewardedAd: RewardedAd? = null
@@ -108,11 +109,7 @@ class AdmobManager {
             Log.d(LOG, "Admob Native Init")
             val adLoader = AdLoader.Builder(context, admob_native)
                 .forNativeAd { nativeAd ->
-                    val nativeType = when (PAGE) {
-                        "home" -> itemModel.home_native_view
-                        "detail" -> itemModel.detail_native_view
-                        else -> ""
-                    }
+                    var nativeType = ServerManager().getItemKey(context, PAGE + "_native_view")
 
                     val nativeLayout = if (nativeType == "medium") {
                         R.layout.native_ads_layout_admob_medium

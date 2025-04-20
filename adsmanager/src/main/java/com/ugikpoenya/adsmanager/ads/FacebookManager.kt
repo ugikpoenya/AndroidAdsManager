@@ -24,6 +24,7 @@ import com.ugikpoenya.adsmanager.R
 import com.ugikpoenya.adsmanager.intervalCounter
 import com.ugikpoenya.servermanager.ServerPrefs
 import androidx.core.view.isEmpty
+import com.ugikpoenya.servermanager.ServerManager
 
 
 var facebookInterstitial: InterstitialAd? = null
@@ -99,11 +100,8 @@ class FacebookManager {
             Log.d(LOG, "Facebook Native ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.childCount == 0) {
-            val nativeType = when (PAGE) {
-                "home" -> itemModel.home_native_view
-                "detail" -> itemModel.detail_native_view
-                else -> ""
-            }
+            var nativeType = ServerManager().getItemKey(context, PAGE + "_native_view")
+
             if (nativeType == "medium") {
                 initFacebookNativeMeidum(context, VIEW, ORDER, PAGE)
             } else {

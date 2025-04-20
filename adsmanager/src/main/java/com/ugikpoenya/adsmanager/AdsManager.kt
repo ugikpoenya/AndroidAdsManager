@@ -7,7 +7,9 @@ import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.adsmanager.ads.AppLovinManager
 import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.adsmanager.ads.UnityManager
+import com.ugikpoenya.servermanager.ServerManager
 import com.ugikpoenya.servermanager.ServerPrefs
+import androidx.core.view.isEmpty
 
 var intervalCounter = 0
 var ORDER_ADMOB: Int = 0
@@ -36,17 +38,14 @@ class AdsManager {
     }
 
     fun initBanner(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val itemModel = ServerPrefs(context).getItemModel()
-        var bannerView: Boolean? = true
-        if (PAGE.lowercase().trim() == "home") bannerView = itemModel?.home_banner
-        if (PAGE.lowercase().trim() == "detail") bannerView = itemModel?.detail_banner
-        if (bannerView !== null && bannerView) {
-            if (view.childCount == 0) {
-                Log.d(LOG, "initBanner $ORDER $PAGE")
-                var priority: String? = ""
-                if (PAGE.lowercase().trim() == "home") priority = itemModel?.home_priority
-                if (PAGE.lowercase().trim() == "detail") priority = itemModel?.detail_priority
+        var pageBanner = ServerManager().getItemKey(context, PAGE + "_banner")
+
+        if ((pageBanner !== "false")) {
+            if (view.isEmpty()) {
+                val itemModel = ServerPrefs(context).getItemModel()
+                var priority = ServerManager().getItemKey(context, PAGE + "_priority")
                 if (priority.isNullOrEmpty()) priority = itemModel?.DEFAULT_PRIORITY
+                Log.d(LOG, "initBanner $ORDER $PAGE $priority")
 
                 val array = priority?.split(",")?.map { it.toInt() }
                 if (array !== null && array.contains(ORDER)) {
@@ -62,21 +61,18 @@ class AdsManager {
         } else {
             Log.d(LOG, "Banner $PAGE disable")
         }
+
     }
 
     fun initNative(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val itemModel = ServerPrefs(context).getItemModel()
-        var nativeView: Boolean? = true
-        if (PAGE.lowercase().trim() == "home") nativeView = itemModel?.home_native
-        if (PAGE.lowercase().trim() == "detail") nativeView = itemModel?.detail_native
+        var pageNative = ServerManager().getItemKey(context, PAGE + "_native")
 
-        if (nativeView !== null && nativeView) {
-            if (view.childCount == 0) {
-                Log.d(LOG, "initNative $ORDER $PAGE")
-                var priority: String? = ""
-                if (PAGE.lowercase().trim() == "home") priority = itemModel?.home_priority
-                if (PAGE.lowercase().trim() == "detail") priority = itemModel?.detail_priority
+        if (pageNative !== "false") {
+            if (view.isEmpty()) {
+                val itemModel = ServerPrefs(context).getItemModel()
+                var priority = ServerManager().getItemKey(context, PAGE + "_priority")
                 if (priority.isNullOrEmpty()) priority = itemModel?.DEFAULT_PRIORITY
+                Log.d(LOG, "initNative $ORDER $PAGE $priority")
 
                 val array = priority?.split(",")?.map { it.toInt() }
                 if (array != null && array.contains(ORDER)) {

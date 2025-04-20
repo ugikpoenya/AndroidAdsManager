@@ -44,7 +44,7 @@ class AppLovinManager {
     fun initAppLovinAds(context: Context) {
         val itemModel = ServerPrefs(context).getItemModel()
 
-        if (itemModel?.applovin_native.isNullOrEmpty() && itemModel?.applovin_banner.isNullOrEmpty() && itemModel?.applovin_interstitial.isNullOrEmpty() && itemModel?.applovin_open_ads.isNullOrEmpty() && itemModel?.applovin_rewarded_ads.isNullOrEmpty() && itemModel?.applovin_sdk_key.isNullOrEmpty()) {
+        if (itemModel?.applovin_merc.isNullOrEmpty() && itemModel?.applovin_banner.isNullOrEmpty() && itemModel?.applovin_interstitial.isNullOrEmpty() && itemModel?.applovin_open_ads.isNullOrEmpty() && itemModel?.applovin_rewarded_ads.isNullOrEmpty() && itemModel?.applovin_sdk_key.isNullOrEmpty()) {
             Log.d(LOG, "initAppLovinAds disable")
         } else {
             // Create the initialization configuration
@@ -231,13 +231,13 @@ class AppLovinManager {
     }
 
     fun initAppLovinNative(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val applovin_native = ServerPrefs(context).getItemModel()?.applovin_native
-        if (applovin_native.isNullOrEmpty()) {
-            Log.d(LOG, "AppLovin Native ID not set ")
+        val applovin_merc = ServerPrefs(context).getItemModel()?.applovin_merc
+        if (applovin_merc.isNullOrEmpty()) {
+            Log.d(LOG, "AppLovin MREC ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.isEmpty()) {
             Log.d(LOG, "AppLovin MREC Init")
-            val adView = MaxAdView(applovin_native, MaxAdFormat.MREC, context)
+            val adView = MaxAdView(applovin_merc, MaxAdFormat.MREC, context)
             adView.setListener(object : MaxAdViewAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin MREC onAdLoaded")
