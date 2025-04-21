@@ -7,33 +7,30 @@ import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
+import androidx.core.view.isEmpty
 import com.applovin.mediation.MaxAd
+import com.applovin.mediation.MaxAdFormat
 import com.applovin.mediation.MaxAdListener
 import com.applovin.mediation.MaxAdViewAdListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.MaxReward
 import com.applovin.mediation.MaxRewardedAdListener
 import com.applovin.mediation.ads.MaxAdView
+import com.applovin.mediation.ads.MaxAppOpenAd
 import com.applovin.mediation.ads.MaxInterstitialAd
 import com.applovin.mediation.ads.MaxRewardedAd
-import com.applovin.mediation.nativeAds.MaxNativeAdListener
-import com.applovin.mediation.nativeAds.MaxNativeAdLoader
-import com.applovin.mediation.nativeAds.MaxNativeAdView
 import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration
+import com.applovin.sdk.AppLovinSdkUtils
 import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.intervalCounter
 import com.ugikpoenya.servermanager.ServerPrefs
-import androidx.core.view.isEmpty
-import com.applovin.mediation.MaxAdFormat
-import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
-import com.applovin.sdk.AppLovinSdkUtils
-import com.ugikpoenya.adsmanager.R
 
 
 private var interstitialAd: MaxInterstitialAd? = null
 var APPLOVIN_TEST_DEVICE_ID: ArrayList<String> = ArrayList()
+private var appOpenAd: MaxAppOpenAd? = null
 
 class AppLovinManager {
     val LOG = "LOG_ADS_APPLOVIN"
@@ -62,6 +59,7 @@ class AppLovinManager {
             AppLovinSdk.getInstance(context).initialize(initConfig.build()) { sdkConfig ->
                 Log.d(LOG, "initAppLovinAds successfully")
                 initInterstitialAppLovin(context)
+                initOpenAdsAppLovin(context)
             }
         }
     }
@@ -285,6 +283,66 @@ class AppLovinManager {
             adView.setBackgroundColor(Color.BLACK)
             VIEW.addView(adView)
             adView.loadAd()
+        }
+    }
+
+    // Init open ads
+    fun initOpenAdsAppLovin(context: Context, function: (() -> Unit)? = null) {
+        val applovin_open_ads = ServerPrefs(context).getItemModel()?.applovin_open_ads
+        if (applovin_open_ads.isNullOrEmpty()) {
+            Log.d(LOG, "AppLovin Open Ads Disable")
+            if (function !== null) function()
+        } else if (appOpenAd == null) {
+            Log.d(LOG, "AppLovin Open Ads Init")
+            appOpenAd = MaxAppOpenAd(applovin_open_ads)
+            appOpenAd?.setListener(object : MaxAdListener {
+                override fun onAdLoaded(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin Open Ads onAdLoaded")
+                }
+
+                override fun onAdDisplayed(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin Open Ads onAdDisplayed")
+                }
+
+                override fun onAdHidden(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin Open Ads onAdHidden")
+                    appOpenAd?.loadAd()
+                }
+
+                override fun onAdClicked(p0: MaxAd) {
+                    Log.d(LOG, "AppLovin Open Ads onAdClicked")
+                }
+
+                override fun onAdLoadFailed(p0: String, p1: MaxError) {
+                    Log.d(LOG, "AppLovin Open Ads onAdLoadFailed")
+                    Log.d(LOG, p1.message)
+                }
+
+                override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
+                    Log.d(LOG, "AppLovin Open Ads onAdDisplayFailed")
+                    Log.d(LOG, p1.message)
+                }
+            })
+            appOpenAd?.loadAd()
+
+
+        } else {
+            Log.d(LOG, "AppLovin Open Ads Already Init")
+            if (function !== null) {
+                AdsManager().showOpenAds(context, function)
+            }
+        }
+
+    }
+
+    fun showOpenAdsAppLovin(context: Context, function: (() -> Unit)? = null) {
+        if (appOpenAd !== null && appOpenAd!!.isReady) {
+            Log.d(LOG, "AppLovin Open Ads  Will show ad.")
+
+            appOpenAd!!.showAd()
+        } else {
+            Log.d(LOG, "AppLovin Open Ads  null.")
+            if (function !== null) function()
         }
     }
 }

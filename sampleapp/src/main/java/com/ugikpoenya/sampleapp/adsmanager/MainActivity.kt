@@ -129,4 +129,9 @@ class MainActivity : AppCompatActivity() {
         Log.d(LOG, "showRewardedAppLovin")
         AppLovinManager().showRewardedAppLovin(this, ORDER_APPLOVIN) { isRewarded -> Log.d(LOG, "isRewarded : $isRewarded") }
     }
+
+    fun showOpenAdsAppLovin(view: View) {
+        Log.d(LOG, "showRewardedAppLovin")
+        AppLovinManager().showOpenAdsAppLovin(this)
+    }
 }
