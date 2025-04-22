@@ -9,6 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ugikpoenya.adsmanager.AdsManager
+import com.ugikpoenya.adsmanager.ORDER_ADMOB
+import com.ugikpoenya.adsmanager.ORDER_APPLOVIN
+import com.ugikpoenya.adsmanager.ORDER_FACEBOOK
+import com.ugikpoenya.adsmanager.ORDER_UNITY
 import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.adsmanager.ads.AppLovinManager
 import com.ugikpoenya.adsmanager.ads.FacebookManager
@@ -16,10 +20,6 @@ import com.ugikpoenya.adsmanager.ads.UnityManager
 
 class MainActivity : AppCompatActivity() {
     val LOG = "LOG_ADS_MANAGER"
-    val ORDER_ADMOB: Int = 0
-    val ORDER_FACEBOOK: Int = 1
-    val ORDER_UNITY: Int = 2
-    val ORDER_APPLOVIN: Int = 3
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
