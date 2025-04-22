@@ -28,9 +28,8 @@ import com.google.android.ump.FormError
 import com.google.android.ump.UserMessagingPlatform
 import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.R
-import com.ugikpoenya.adsmanager.intervalCounter
-import com.ugikpoenya.servermanager.ServerPrefs
 import androidx.core.view.isEmpty
+import com.ugikpoenya.adsmanager.globalItemModel
 import com.ugikpoenya.servermanager.ServerManager
 
 
@@ -48,13 +47,11 @@ class AdmobManager {
 
     fun initAdmobAds(context: Context, function: () -> (Unit)) {
         Log.d(LOG, "Admob test device " + ADMOB_TEST_DEVICE_ID.size)
-        val itemModel = ServerPrefs(context).getItemModel()
-
-        if (itemModel?.admob_banner.isNullOrEmpty()
-            && itemModel?.admob_interstitial.isNullOrEmpty()
-            && itemModel?.admob_native.isNullOrEmpty()
-            && itemModel?.admob_rewarded_ads.isNullOrEmpty()
-            && itemModel?.admob_open_ads.isNullOrEmpty()
+        if (globalItemModel.admob_banner.isEmpty()
+            && globalItemModel.admob_interstitial.isEmpty()
+            && globalItemModel.admob_native.isEmpty()
+            && globalItemModel.admob_rewarded_ads.isEmpty()
+            && globalItemModel.admob_open_ads.isEmpty()
         ) {
             Log.d(LOG, "initAdmobAds disable")
         } else {
@@ -68,8 +65,7 @@ class AdmobManager {
     }
 
     fun initAdmobBanner(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val admob_banner = ServerPrefs(context).getItemModel()?.admob_banner
-        if (admob_banner.isNullOrEmpty()) {
+        if (globalItemModel.admob_banner.isEmpty()) {
             Log.d(LOG, "Admob Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
         } else if (VIEW.isEmpty()) {
@@ -80,7 +76,7 @@ class AdmobManager {
             val adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth)
             val adView = AdView(context)
             VIEW.addView(adView)
-            adView.adUnitId = admob_banner.toString()
+            adView.adUnitId = globalItemModel.admob_banner.toString()
             adView.setAdSize(adSize)
             Log.d(LOG, "Admob Banner Init")
             val adRequest = AdRequest.Builder().build()
@@ -100,14 +96,12 @@ class AdmobManager {
     }
 
     fun initAdmobNative(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val itemModel = ServerPrefs(context).getItemModel()
-        val admob_native = itemModel?.admob_native
-        if (admob_native.isNullOrEmpty()) {
+        if (globalItemModel.admob_native.isEmpty()) {
             Log.d(LOG, "Admob Native ID Not Set")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.isEmpty()) {
             Log.d(LOG, "Admob Native Init")
-            val adLoader = AdLoader.Builder(context, admob_native)
+            val adLoader = AdLoader.Builder(context, globalItemModel.admob_native)
                 .forNativeAd { nativeAd ->
                     var nativeType = ServerManager().getItemKey(context, PAGE + "_native_view")
 
@@ -137,8 +131,6 @@ class AdmobManager {
 
 
     fun showInterstitialAdmob(context: Context, ORDER: Int = 0) {
-        val itemModel = ServerPrefs(context).getItemModel()
-
         if (admobInterstitial != null) {
             admobInterstitial?.fullScreenContentCallback =
                 object : FullScreenContentCallback() {
@@ -153,8 +145,8 @@ class AdmobManager {
                     }
                 }
             admobInterstitial?.show(context as Activity)
-            intervalCounter = itemModel?.interstitial_interval?.toInt() ?: 0
             Log.d(LOG, "Interstitial admob Show")
+            AdsManager().interstitielSuccessfullyDisplayed(context)
         } else {
             Log.d(LOG, "Interstitial admob not loaded")
             AdsManager().showInterstitial(context, ORDER)
@@ -162,16 +154,14 @@ class AdmobManager {
     }
 
     fun initInterstitialAdmob(context: Context) {
-        val itemModel = ServerPrefs(context).getItemModel()
-
-        if (itemModel?.admob_interstitial.isNullOrEmpty()) {
+        if (globalItemModel.admob_interstitial.isNullOrEmpty()) {
             Log.d(LOG, "Admob Interstitial ID set")
         } else {
             Log.d(LOG, "Init Admob Interstitial ")
             val adRequest = AdRequest.Builder().build()
             InterstitialAd.load(
                 context,
-                itemModel.admob_interstitial.toString(),
+                globalItemModel.admob_interstitial.toString(),
                 adRequest,
                 object : InterstitialAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -227,13 +217,12 @@ class AdmobManager {
     }
 
     fun initRewardedAdmob(context: Context) {
-        val itemModel = ServerPrefs(context).getItemModel()
-        if (itemModel?.admob_rewarded_ads.isNullOrEmpty()) {
+        if (globalItemModel.admob_rewarded_ads.isEmpty()) {
             Log.d(LOG, "Admob Rewarded ID not set")
         } else {
             Log.d(LOG, "Init Admob Rewarded ")
             val adRequest = AdRequest.Builder().build()
-            RewardedAd.load(context, itemModel.admob_rewarded_ads.toString(), adRequest, object : RewardedAdLoadCallback() {
+            RewardedAd.load(context, globalItemModel.admob_rewarded_ads.toString(), adRequest, object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Log.d(LOG, "Admob Rewarded " + adError.message)
                     admobRewardedAd = null
@@ -249,15 +238,14 @@ class AdmobManager {
 
     // Init open ads
     fun initOpenAdsAdmob(context: Context, function: (() -> Unit)? = null) {
-        val itemModel = ServerPrefs(context).getItemModel()
         val request = AdRequest.Builder().build()
-        if (itemModel?.admob_open_ads.isNullOrEmpty()) {
+        if (globalItemModel.admob_open_ads.isEmpty()) {
             Log.d(LOG, "Admob Open Ads Disable")
             if (function !== null) function()
         } else if (appOpenAd == null) {
             Log.d(LOG, "Admob Open Ads Init")
             AppOpenAd.load(
-                context, itemModel.admob_open_ads.toString(), request,
+                context, globalItemModel.admob_open_ads.toString(), request,
                 object : AppOpenAd.AppOpenAdLoadCallback() {
                     override fun onAdLoaded(ad: AppOpenAd) {
                         Log.d(LOG, "Admob Open Ads Loaded")

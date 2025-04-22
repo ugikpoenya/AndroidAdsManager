@@ -5,8 +5,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.RelativeLayout
 import com.ugikpoenya.adsmanager.AdsManager
-import com.ugikpoenya.adsmanager.intervalCounter
-import com.ugikpoenya.servermanager.ServerPrefs
+import com.ugikpoenya.adsmanager.globalItemModel
 import com.unity3d.ads.*
 import com.unity3d.services.banners.BannerErrorInfo
 import com.unity3d.services.banners.BannerView
@@ -15,17 +14,16 @@ import com.unity3d.services.banners.UnityBannerSize
 class UnityManager {
     val LOG = "LOG_ADS_UNITY"
     fun initUnityAds(context: Context) {
-        val itemModel = ServerPrefs(context).getItemModel()
-        if (itemModel?.unity_game_id.isNullOrEmpty()) {
+        if (globalItemModel.unity_game_id.isEmpty()) {
             Log.d(LOG, "initUnityAds disable")
         } else {
-            if (itemModel.unity_test_mode) {
+            if (globalItemModel.unity_test_mode) {
                 Log.d(LOG, "Init Unity Ads Test Mode ")
             } else {
                 Log.d(LOG, "Init Unity Ads Production ")
             }
 
-            UnityAds.initialize(context, itemModel.unity_game_id, itemModel.unity_test_mode, object : IUnityAdsInitializationListener {
+            UnityAds.initialize(context, globalItemModel.unity_game_id, globalItemModel.unity_test_mode, object : IUnityAdsInitializationListener {
                 override fun onInitializationComplete() {
                     Log.d(LOG, "onUnityAdsReady onInitializationComplete")
                     initInterstitialUnity(context)
@@ -43,13 +41,12 @@ class UnityManager {
     }
 
     fun initUnityBanner(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val unity_banner = ServerPrefs(context).getItemModel()?.unity_banner
-        if (unity_banner.isNullOrEmpty()) {
+        if (globalItemModel.unity_banner.isNullOrEmpty()) {
             Log.d(LOG, "Unity Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
         } else if (VIEW.childCount == 0) {
             Log.d(LOG, "Unity banner init")
-            val bannerView = BannerView(context as Activity, unity_banner, UnityBannerSize.getDynamicSize(context))
+            val bannerView = BannerView(context as Activity, globalItemModel.unity_banner, UnityBannerSize.getDynamicSize(context))
             bannerView.listener = object : BannerView.IListener {
                 override fun onBannerLeftApplication(p0: BannerView?) {
                     Log.d(LOG, "Unity onBannerLeftApplication ")
@@ -79,12 +76,11 @@ class UnityManager {
     }
 
     fun initInterstitialUnity(context: Context) {
-        val unity_interstitial = ServerPrefs(context).getItemModel()?.unity_interstitial
-        if (unity_interstitial.isNullOrEmpty()) {
+        if (globalItemModel.unity_interstitial.isNullOrEmpty()) {
             Log.d(LOG, "Unity Interstitial ID Not set")
         } else {
             Log.d(LOG, "Init Unity Ads Interstitial ")
-            UnityAds.load(unity_interstitial, object : IUnityAdsLoadListener {
+            UnityAds.load(globalItemModel.unity_interstitial, object : IUnityAdsLoadListener {
                 override fun onUnityAdsAdLoaded(p0: String?) {
                     Log.d(LOG, "Interstitial onUnityAdsAdLoaded $p0")
                 }
@@ -101,14 +97,12 @@ class UnityManager {
     }
 
     fun showInterstitialUnity(context: Context, ORDER: Int = 0) {
-        val itemModel = ServerPrefs(context).getItemModel()
-        val unity_interstitial = itemModel?.unity_interstitial
-        if (unity_interstitial.isNullOrEmpty()) {
+        if (globalItemModel.unity_interstitial.isNullOrEmpty()) {
             Log.d(LOG, "Unity Interstitial ID Not set")
             AdsManager().showInterstitial(context, ORDER)
         } else {
             Log.d(LOG, "Show Unity Ads Interstitial ")
-            UnityAds.show(context as Activity, unity_interstitial, UnityAdsShowOptions(), object : IUnityAdsShowListener {
+            UnityAds.show(context as Activity, globalItemModel.unity_interstitial, UnityAdsShowOptions(), object : IUnityAdsShowListener {
                 override fun onUnityAdsShowFailure(
                     p0: String?,
                     p1: UnityAds.UnityAdsShowError?,
@@ -131,7 +125,7 @@ class UnityManager {
                     p1: UnityAds.UnityAdsShowCompletionState?,
                 ) {
                     Log.d(LOG, "Interstitial onUnityAdsShowComplete")
-                    intervalCounter = itemModel?.interstitial_interval?.toInt() ?: 0
+                    AdsManager().interstitielSuccessfullyDisplayed(context)
                     initInterstitialUnity(context)
                 }
             })
@@ -140,12 +134,11 @@ class UnityManager {
 
 
     fun initRewardedUnity(context: Context) {
-        val unity_rewarded_ads = ServerPrefs(context).getItemModel()?.unity_rewarded_ads
-        if (unity_rewarded_ads.isNullOrEmpty()) {
+        if (globalItemModel.unity_rewarded_ads.isEmpty()) {
             Log.d(LOG, "Unity RewardedAds ID Not set")
         } else {
             Log.d(LOG, "Init Unity Ads RewardedAds ")
-            UnityAds.load(unity_rewarded_ads, object : IUnityAdsLoadListener {
+            UnityAds.load(globalItemModel.unity_rewarded_ads, object : IUnityAdsLoadListener {
                 override fun onUnityAdsAdLoaded(p0: String?) {
                     Log.d(LOG, "RewardedAds onUnityAdsAdLoaded $p0")
                 }
@@ -162,13 +155,12 @@ class UnityManager {
     }
 
     fun showRewardedUnity(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
-        val unity_rewarded_ads = ServerPrefs(context).getItemModel()?.unity_rewarded_ads
-        if (unity_rewarded_ads.isNullOrEmpty()) {
+        if (globalItemModel.unity_rewarded_ads.isEmpty()) {
             Log.d(LOG, "Unity RewardedAds ID Not set")
             AdsManager().showRewardedAds(context, ORDER, callbackFunction)
         } else {
             Log.d(LOG, "Init Unity Ads RewardedAds ")
-            UnityAds.show(context as Activity, unity_rewarded_ads, UnityAdsShowOptions(), object : IUnityAdsShowListener {
+            UnityAds.show(context as Activity, globalItemModel.unity_rewarded_ads, UnityAdsShowOptions(), object : IUnityAdsShowListener {
                 override fun onUnityAdsShowFailure(
                     p0: String?,
                     p1: UnityAds.UnityAdsShowError?,

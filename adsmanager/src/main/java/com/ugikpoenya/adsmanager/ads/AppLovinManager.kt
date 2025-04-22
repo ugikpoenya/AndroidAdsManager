@@ -24,8 +24,7 @@ import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration
 import com.applovin.sdk.AppLovinSdkUtils
 import com.ugikpoenya.adsmanager.AdsManager
-import com.ugikpoenya.adsmanager.intervalCounter
-import com.ugikpoenya.servermanager.ServerPrefs
+import com.ugikpoenya.adsmanager.globalItemModel
 
 
 private var interstitialAd: MaxInterstitialAd? = null
@@ -39,14 +38,18 @@ class AppLovinManager {
     }
 
     fun initAppLovinAds(context: Context) {
-        val itemModel = ServerPrefs(context).getItemModel()
-
-        if (itemModel?.applovin_merc.isNullOrEmpty() && itemModel?.applovin_banner.isNullOrEmpty() && itemModel?.applovin_interstitial.isNullOrEmpty() && itemModel?.applovin_open_ads.isNullOrEmpty() && itemModel?.applovin_rewarded_ads.isNullOrEmpty() && itemModel?.applovin_sdk_key.isNullOrEmpty()) {
+        if (globalItemModel.applovin_merc.isEmpty()
+            && globalItemModel.applovin_banner.isEmpty()
+            && globalItemModel.applovin_interstitial.isEmpty()
+            && globalItemModel.applovin_open_ads.isEmpty()
+            && globalItemModel.applovin_rewarded_ads.isEmpty()
+            && globalItemModel.applovin_sdk_key.isEmpty()
+        ) {
             Log.d(LOG, "initAppLovinAds disable")
         } else {
             // Create the initialization configuration
             val initConfig = AppLovinSdkInitializationConfiguration
-                .builder(itemModel.applovin_sdk_key)
+                .builder(globalItemModel.applovin_sdk_key)
                 .setMediationProvider(AppLovinMediationProvider.MAX)
 
             if (FACEBOOK_TEST_DEVICE_ID.size > 0) {
@@ -65,14 +68,13 @@ class AppLovinManager {
     }
 
     fun initAppLovinBanner(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val applovin_banner = ServerPrefs(context).getItemModel()?.applovin_banner
-        if (applovin_banner.isNullOrEmpty()) {
+        if (globalItemModel.applovin_banner.isEmpty()) {
             Log.d(LOG, "AppLovin Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
         } else if (VIEW.isEmpty()) {
             Log.d(LOG, "AppLovin Banner Init")
 
-            val adView = MaxAdView(applovin_banner, context)
+            val adView = MaxAdView(globalItemModel.applovin_banner, context)
             adView.setListener(object : MaxAdViewAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Banner onAdLoaded")
@@ -124,12 +126,11 @@ class AppLovinManager {
     }
 
     fun initInterstitialAppLovin(context: Context) {
-        val applovin_interstitial = ServerPrefs(context).getItemModel()?.applovin_interstitial
-        if (applovin_interstitial.isNullOrEmpty()) {
+        if (globalItemModel.applovin_interstitial.isEmpty()) {
             Log.d(LOG, "AppLovin Interstitial ID set")
         } else {
             Log.d(LOG, "Init AppLovin Interstitial ")
-            interstitialAd = MaxInterstitialAd(applovin_interstitial, context)
+            interstitialAd = MaxInterstitialAd(globalItemModel.applovin_interstitial, context)
             interstitialAd?.setExtraParameter("container_view_ads", "true")
             interstitialAd?.setListener(object : MaxAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
@@ -166,13 +167,10 @@ class AppLovinManager {
     }
 
     fun showInterstitialAppLovin(context: Context, ORDER: Int = 0) {
-        val itemModel = ServerPrefs(context).getItemModel()
-
         if (interstitialAd != null && interstitialAd!!.isReady) {
             interstitialAd?.showAd()
-
-            intervalCounter = itemModel?.interstitial_interval?.toInt() ?: 0
             Log.d(LOG, "Interstitial AppLovin Show")
+            AdsManager().interstitielSuccessfullyDisplayed(context)
         } else {
             Log.d(LOG, "Interstitial AppLovin not loaded")
             AdsManager().showInterstitial(context, ORDER)
@@ -180,14 +178,13 @@ class AppLovinManager {
     }
 
     fun showRewardedAppLovin(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
-        val applovin_rewarded_ads = ServerPrefs(context).getItemModel()?.applovin_rewarded_ads
-        if (applovin_rewarded_ads.isNullOrEmpty()) {
+        if (globalItemModel.applovin_rewarded_ads.isEmpty()) {
             Log.d(LOG, "AppLovin Rewarded ID Not set")
             AdsManager().showRewardedAds(context, ORDER, callbackFunction)
         } else {
             Log.d(LOG, "Init AppLovin Rewarded ")
             var isRewardEarned = false
-            var rewardedAd = MaxRewardedAd.getInstance(applovin_rewarded_ads, context as Activity)
+            var rewardedAd = MaxRewardedAd.getInstance(globalItemModel.applovin_rewarded_ads, context as Activity)
             rewardedAd?.setListener(object : MaxRewardedAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin RewardedAd onAdLoaded")
@@ -229,13 +226,12 @@ class AppLovinManager {
     }
 
     fun initAppLovinNative(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        val applovin_merc = ServerPrefs(context).getItemModel()?.applovin_merc
-        if (applovin_merc.isNullOrEmpty()) {
+        if (globalItemModel.applovin_merc.isEmpty()) {
             Log.d(LOG, "AppLovin MREC ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.isEmpty()) {
             Log.d(LOG, "AppLovin MREC Init")
-            val adView = MaxAdView(applovin_merc, MaxAdFormat.MREC, context)
+            val adView = MaxAdView(globalItemModel.applovin_merc, MaxAdFormat.MREC, context)
             adView.setListener(object : MaxAdViewAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin MREC onAdLoaded")
@@ -288,13 +284,12 @@ class AppLovinManager {
 
     // Init open ads
     fun initOpenAdsAppLovin(context: Context, function: (() -> Unit)? = null) {
-        val applovin_open_ads = ServerPrefs(context).getItemModel()?.applovin_open_ads
-        if (applovin_open_ads.isNullOrEmpty()) {
+        if (globalItemModel.applovin_open_ads.isEmpty()) {
             Log.d(LOG, "AppLovin Open Ads Disable")
             if (function !== null) function()
         } else if (appOpenAd == null) {
             Log.d(LOG, "AppLovin Open Ads Init")
-            appOpenAd = MaxAppOpenAd(applovin_open_ads)
+            appOpenAd = MaxAppOpenAd(globalItemModel.applovin_open_ads)
             appOpenAd?.setListener(object : MaxAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Open Ads onAdLoaded")

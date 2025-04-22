@@ -1,6 +1,6 @@
 [versions]
 agp = "8.9.1"
-androidservermanager = "1.0.5"
+androidservermanager = "1.0.7"
 applovinSdk = "13.2.0"
 audienceNetworkSdk = "6.19.0"
 kotlin = "2.0.21"
