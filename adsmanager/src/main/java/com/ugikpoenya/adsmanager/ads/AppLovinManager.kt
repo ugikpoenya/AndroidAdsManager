@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
-import androidx.core.view.isEmpty
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdFormat
 import com.applovin.mediation.MaxAdListener
@@ -71,7 +70,7 @@ class AppLovinManager {
         if (globalItemModel.applovin_banner.isEmpty()) {
             Log.d(LOG, "AppLovin Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.isEmpty()) {
+        } else if (VIEW.childCount == 0) {
             Log.d(LOG, "AppLovin Banner Init")
 
             val adView = MaxAdView(globalItemModel.applovin_banner, context)
@@ -229,7 +228,7 @@ class AppLovinManager {
         if (globalItemModel.applovin_merc.isEmpty()) {
             Log.d(LOG, "AppLovin MREC ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.isEmpty()) {
+        } else if (VIEW.childCount == 0) {
             Log.d(LOG, "AppLovin MREC Init")
             val adView = MaxAdView(globalItemModel.applovin_merc, MaxAdFormat.MREC, context)
             adView.setListener(object : MaxAdViewAdListener {
@@ -283,10 +282,10 @@ class AppLovinManager {
     }
 
     // Init open ads
-    fun initOpenAdsAppLovin(context: Context, function: (() -> Unit)? = null) {
+    fun initOpenAdsAppLovin(context: Context, callbackFunction: (() -> Unit)? = null) {
         if (globalItemModel.applovin_open_ads.isEmpty()) {
             Log.d(LOG, "AppLovin Open Ads Disable")
-            if (function !== null) function()
+            if (callbackFunction !== null) callbackFunction()
         } else if (appOpenAd == null) {
             Log.d(LOG, "AppLovin Open Ads Init")
             appOpenAd = MaxAppOpenAd(globalItemModel.applovin_open_ads)
@@ -323,21 +322,21 @@ class AppLovinManager {
 
         } else {
             Log.d(LOG, "AppLovin Open Ads Already Init")
-            if (function !== null) {
-                AdsManager().showOpenAds(context, function)
+            if (callbackFunction !== null) {
+                AdsManager().showOpenAds(context, callbackFunction)
             }
         }
 
     }
 
-    fun showOpenAdsAppLovin(context: Context, function: (() -> Unit)? = null) {
+    fun showOpenAdsAppLovin(context: Context, callbackFunction: (() -> Unit)? = null) {
         if (appOpenAd !== null && appOpenAd!!.isReady) {
             Log.d(LOG, "AppLovin Open Ads  Will show ad.")
 
             appOpenAd!!.showAd()
         } else {
             Log.d(LOG, "AppLovin Open Ads  null.")
-            if (function !== null) function()
+            if (callbackFunction !== null) callbackFunction()
         }
     }
 }

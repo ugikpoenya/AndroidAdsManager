@@ -28,7 +28,6 @@ import com.google.android.ump.FormError
 import com.google.android.ump.UserMessagingPlatform
 import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.R
-import androidx.core.view.isEmpty
 import com.ugikpoenya.adsmanager.globalItemModel
 import com.ugikpoenya.servermanager.ServerManager
 
@@ -68,7 +67,7 @@ class AdmobManager {
         if (globalItemModel.admob_banner.isEmpty()) {
             Log.d(LOG, "Admob Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.isEmpty()) {
+        } else if (VIEW.childCount == 0) {
             val outMetrics = Resources.getSystem().displayMetrics
             val widthPixels = outMetrics.widthPixels.toFloat()
             val density = outMetrics.density
@@ -99,7 +98,7 @@ class AdmobManager {
         if (globalItemModel.admob_native.isEmpty()) {
             Log.d(LOG, "Admob Native ID Not Set")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.isEmpty()) {
+        } else if (VIEW.childCount == 0) {
             Log.d(LOG, "Admob Native Init")
             val adLoader = AdLoader.Builder(context, globalItemModel.admob_native)
                 .forNativeAd { nativeAd ->
@@ -301,7 +300,7 @@ class AdmobManager {
     }
 
     // GDPR Init
-    fun initGdpr(context: Context, function: () -> (Unit)) {
+    fun initGdpr(context: Context, callbackFunction: () -> (Unit)) {
         Log.d(LOG, "Init GDPR")
         val params = ConsentRequestParameters.Builder()
 
@@ -324,16 +323,16 @@ class AdmobManager {
 
                 if (consentInformation!!.canRequestAds()) {
                     Log.d(LOG, "GDPR canRequestAds")
-                    initAdmobAds(context, function)
+                    initAdmobAds(context, callbackFunction)
                 } else {
                     Log.d(LOG, "GDPR canNotRequestAds")
-                    function()
+                    callbackFunction()
                 }
 
             }
         }, { requestConsentError: FormError ->
             Log.d(LOG, String.format("%s: %s", requestConsentError.errorCode, requestConsentError.message))
-            initAdmobAds(context, function)
+            initAdmobAds(context, callbackFunction)
         })
     }
 }

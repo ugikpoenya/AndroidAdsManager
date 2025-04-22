@@ -21,7 +21,7 @@ var ORDER_APPLOVIN: Int = 3
 class AdsManager {
     val LOG = "LOG_ADS_MANAGER"
 
-    fun initAds(context: Context, function: () -> (Unit)) {
+    fun initAds(context: Context, callbackFunction: () -> (Unit)) {
         Log.d(LOG, "Ads Manager initAds")
         val itemModel = ServerPrefs(context).getItemModel()
         if (itemModel != null) {
@@ -29,18 +29,18 @@ class AdsManager {
             globalItemModel = itemModel
         }
         if (itemModel !== null && itemModel.admob_gdpr) {
-            AdmobManager().initGdpr(context, function)
+            AdmobManager().initGdpr(context, callbackFunction)
         } else {
-            AdmobManager().initAdmobAds(context, function)
+            AdmobManager().initAdmobAds(context, callbackFunction)
         }
         FacebookManager().initFacebookAds(context)
         UnityManager().initUnityAds(context)
         AppLovinManager().initAppLovinAds(context)
     }
 
-    fun showOpenAds(context: Context, function: (() -> Unit)? = null) {
+    fun showOpenAds(context: Context, callbackFunction: (() -> Unit)? = null) {
         Log.d(LOG, "showOpenAds")
-        AdmobManager().showOpenAdsAdmob(context, function)
+        AdmobManager().showOpenAdsAdmob(context, callbackFunction)
     }
 
     fun initBanner(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {

@@ -21,7 +21,6 @@ import com.facebook.ads.RewardedVideoAd
 import com.facebook.ads.RewardedVideoAdListener
 import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.R
-import androidx.core.view.isEmpty
 import com.ugikpoenya.adsmanager.globalItemModel
 import com.ugikpoenya.servermanager.ServerManager
 
@@ -62,7 +61,7 @@ class FacebookManager {
         if (globalItemModel.facebook_banner.isEmpty()) {
             Log.d(LOG, "Facebook Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.isEmpty()) {
+        } else if (VIEW.childCount == 0) {
             val adView = AdView(context, globalItemModel.facebook_banner, AdSize.BANNER_HEIGHT_50)
             val loadAdConfig = adView.buildLoadAdConfig()
                 .withAdListener(object : AdListener {
@@ -94,7 +93,7 @@ class FacebookManager {
         if (globalItemModel.facebook_native.isEmpty()) {
             Log.d(LOG, "Facebook Native ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
-        } else if (VIEW.isEmpty()) {
+        } else if (VIEW.childCount == 0) {
             var nativeType = ServerManager().getItemKey(context, PAGE + "_native_view")
 
             if (nativeType == "medium") {

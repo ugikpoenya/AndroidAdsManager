@@ -41,7 +41,7 @@ class UnityManager {
     }
 
     fun initUnityBanner(context: Context, VIEW: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        if (globalItemModel.unity_banner.isNullOrEmpty()) {
+        if (globalItemModel.unity_banner.isEmpty()) {
             Log.d(LOG, "Unity Banner ID Not Set")
             AdsManager().initBanner(context, VIEW, ORDER, PAGE)
         } else if (VIEW.childCount == 0) {
