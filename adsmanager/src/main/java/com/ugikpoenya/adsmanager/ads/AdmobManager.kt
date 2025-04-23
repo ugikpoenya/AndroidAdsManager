@@ -44,7 +44,7 @@ class AdmobManager {
         ADMOB_TEST_DEVICE_ID.add(test_id)
     }
 
-    fun initAdmobAds(context: Context, function: () -> (Unit)) {
+    fun initAdmobAds(context: Context, callbackFunction: () -> (Unit)) {
         Log.d(LOG, "Admob test device " + ADMOB_TEST_DEVICE_ID.size)
         if (globalItemModel.admob_banner.isEmpty()
             && globalItemModel.admob_interstitial.isEmpty()
@@ -58,7 +58,7 @@ class AdmobManager {
                 Log.d(LOG, "initAdmobAds successfully")
                 initInterstitialAdmob(context)
                 initRewardedAdmob(context)
-                initOpenAdsAdmob(context, function)
+                initOpenAdsAdmob(context, callbackFunction)
             }
         }
     }
@@ -236,11 +236,11 @@ class AdmobManager {
     }
 
     // Init open ads
-    fun initOpenAdsAdmob(context: Context, function: (() -> Unit)? = null) {
+    fun initOpenAdsAdmob(context: Context, callbackFunction: (() -> Unit)? = null) {
         val request = AdRequest.Builder().build()
         if (globalItemModel.admob_open_ads.isEmpty()) {
             Log.d(LOG, "Admob Open Ads Disable")
-            if (function !== null) function()
+            if (callbackFunction !== null) callbackFunction()
         } else if (appOpenAd == null) {
             Log.d(LOG, "Admob Open Ads Init")
             AppOpenAd.load(
@@ -249,8 +249,8 @@ class AdmobManager {
                     override fun onAdLoaded(ad: AppOpenAd) {
                         Log.d(LOG, "Admob Open Ads Loaded")
                         appOpenAd = ad
-                        if (function !== null) {
-                            AdsManager().showOpenAds(context, function)
+                        if (callbackFunction !== null) {
+                            AdsManager().showOpenAds(context, callbackFunction)
                         }
                     }
 
@@ -261,16 +261,16 @@ class AdmobManager {
             )
         } else {
             Log.d(LOG, "Admob Open Ads Already Init")
-            if (function !== null) {
-                AdsManager().showOpenAds(context, function)
+            if (callbackFunction !== null) {
+                AdsManager().showOpenAds(context, callbackFunction)
             }
         }
     }
 
-    fun showOpenAdsAdmob(context: Context, function: (() -> Unit)? = null) {
+    fun showOpenAdsAdmob(context: Context, callbackFunction: (() -> Unit)? = null) {
         if (appOpenAd == null) {
             Log.d(LOG, "Admob Open Ads  null.")
-            if (function !== null) function()
+            if (callbackFunction !== null) callbackFunction()
         } else {
             Log.d(LOG, "Admob Open Ads  Will show ad.")
             val fullScreenContentCallback: FullScreenContentCallback =
@@ -278,12 +278,12 @@ class AdmobManager {
                     override fun onAdDismissedFullScreenContent() {
                         appOpenAd = null
                         Log.d(LOG, "Admob Open Ads  Dismissed")
-                        if (function !== null) function()
+                        if (callbackFunction !== null) callbackFunction()
                         initOpenAdsAdmob(context)
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        if (function !== null) function()
+                        if (callbackFunction !== null) callbackFunction()
                     }
 
                     override fun onAdShowedFullScreenContent() {
