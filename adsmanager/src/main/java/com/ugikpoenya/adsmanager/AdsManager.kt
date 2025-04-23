@@ -39,15 +39,27 @@ class AdsManager {
         AppLovinManager().initAppLovinAds(context)
     }
 
-    fun showOpenAds(context: Context, callbackFunction: (() -> Unit)? = null) {
+    fun showOpenAds(context: Context, ORDER: Int = 0, callbackFunction: (() -> Unit)? = null) {
         if (isOpenAdsAllowedReadyShow(context)) {
-            Log.d(LOG, "showOpenAds ")
-            AdmobManager().showOpenAdsAdmob(context, callbackFunction)
+            Log.d(LOG, "showOpenAds $ORDER")
+            var priority = globalItemModel.DEFAULT_PRIORITY
+            val array = priority.split(",").map { it.toInt() }
+            if (array.contains(ORDER)) {
+                when {
+                    array[ORDER] == ORDER_ADMOB -> AdmobManager().showOpenAdsAdmob(context, ORDER + 1, callbackFunction)
+                    array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().showOpenAdsAppLovin(context, ORDER + 1, callbackFunction)
+                    else -> showOpenAds(context, ORDER + 1, callbackFunction)
+                }
+            } else if (callbackFunction !== null) {
+                callbackFunction()
+            } else {
+                Log.d(LOG, "callbackFunction  Null $ORDER")
+            }
         } else if (callbackFunction !== null) {
-            Log.d(LOG, "Run callbackFunction  ")
+            Log.d(LOG, "Run callbackFunction  $ORDER")
             callbackFunction()
         } else {
-            Log.d(LOG, "callbackFunction  Null")
+            Log.d(LOG, "callbackFunction  Null $ORDER")
         }
     }
 

@@ -18,7 +18,6 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.appopen.AppOpenAd
-import com.google.android.gms.ads.initialization.AdapterStatus
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAdView
@@ -30,6 +29,7 @@ import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.FormError
 import com.google.android.ump.UserMessagingPlatform
 import com.ugikpoenya.adsmanager.AdsManager
+import com.ugikpoenya.adsmanager.ORDER_ADMOB
 import com.ugikpoenya.adsmanager.R
 import com.ugikpoenya.adsmanager.globalItemModel
 import com.ugikpoenya.servermanager.ServerManager
@@ -37,7 +37,6 @@ import com.ugikpoenya.servermanager.ServerManager
 
 var admobRewardedAd: RewardedAd? = null
 var admobInterstitial: InterstitialAd? = null
-private var appOpenAd: AppOpenAd? = null
 var consentInformation: ConsentInformation? = null
 var ADMOB_TEST_DEVICE_ID: ArrayList<String> = ArrayList()
 
@@ -70,12 +69,7 @@ class AdmobManager {
                     isAdmobInitCalled = true  // Update status
                     initInterstitialAdmob(context)
                     initRewardedAdmob(context)
-                    if (AdsManager().isOpenAdsAllowedReadyShow(context)) {
-                        initOpenAdsAdmob(context, callbackFunction)
-                    } else {
-                        initOpenAdsAdmob(context)
-                        callbackFunction()
-                    }
+                    AdsManager().showOpenAds(context, ORDER_ADMOB, callbackFunction)
                 }
             }
 
@@ -87,7 +81,7 @@ class AdmobManager {
                     // Tetap lanjut walau AdMob gagal init
                     initInterstitialAdmob(context)
                     initRewardedAdmob(context)
-                    initOpenAdsAdmob(context, callbackFunction)
+                    AdsManager().showOpenAds(context, ORDER_ADMOB, callbackFunction)
                 }
             }, 10000)
         }
@@ -266,63 +260,46 @@ class AdmobManager {
     }
 
     // Init open ads
-    fun initOpenAdsAdmob(context: Context, callbackFunction: (() -> Unit)? = null) {
+    fun showOpenAdsAdmob(context: Context, ORDER: Int = 0, callbackFunction: (() -> Unit)? = null) {
+        val fullScreenContentCallback: FullScreenContentCallback =
+            object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    Log.d(LOG, "Admob Open Ads  Dismissed")
+                    AdsManager().OpenAdsSuccessfullyDisplayed(context)
+                    if (callbackFunction !== null) callbackFunction()
+                }
+
+                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                    AdsManager().showOpenAds(context, ORDER, callbackFunction)
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    Log.d(LOG, "Admob Open Ads  Showed")
+                }
+            }
+
         val request = AdRequest.Builder().build()
         if (globalItemModel.admob_open_ads.isEmpty()) {
             Log.d(LOG, "Admob Open Ads Disable")
-            if (callbackFunction !== null) callbackFunction()
-        } else if (appOpenAd == null) {
+            AdsManager().showOpenAds(context, ORDER, callbackFunction)
+        } else {
             Log.d(LOG, "Admob Open Ads Init")
             AppOpenAd.load(
                 context, globalItemModel.admob_open_ads.toString(), request,
                 object : AppOpenAd.AppOpenAdLoadCallback() {
                     override fun onAdLoaded(ad: AppOpenAd) {
                         Log.d(LOG, "Admob Open Ads Loaded")
-                        appOpenAd = ad
-                        if (callbackFunction !== null) {
-                            AdsManager().showOpenAds(context, callbackFunction)
-                        }
+                        ad.fullScreenContentCallback = fullScreenContentCallback
+                        ad.show(context as Activity)
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                         Log.d(LOG, "Admob Open Ads Filed " + loadAdError.message)
+                        AdsManager().showOpenAds(context, ORDER, callbackFunction)
                     }
                 }
             )
-        } else {
-            Log.d(LOG, "Admob Open Ads Already Init")
-            if (callbackFunction !== null) {
-                AdsManager().showOpenAds(context, callbackFunction)
-            }
-        }
-    }
 
-    fun showOpenAdsAdmob(context: Context, callbackFunction: (() -> Unit)? = null) {
-        if (appOpenAd == null) {
-            Log.d(LOG, "Admob Open Ads  null.")
-            if (callbackFunction !== null) callbackFunction()
-        } else {
-            Log.d(LOG, "Admob Open Ads  Will show ad.")
-            val fullScreenContentCallback: FullScreenContentCallback =
-                object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        appOpenAd = null
-                        Log.d(LOG, "Admob Open Ads  Dismissed")
-                        AdsManager().OpenAdsSuccessfullyDisplayed(context)
-                        if (callbackFunction !== null) callbackFunction()
-                        initOpenAdsAdmob(context)
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        if (callbackFunction !== null) callbackFunction()
-                    }
-
-                    override fun onAdShowedFullScreenContent() {
-                        Log.d(LOG, "Admob Open Ads  Showed")
-                    }
-                }
-            appOpenAd!!.fullScreenContentCallback = fullScreenContentCallback
-            appOpenAd!!.show(context as Activity)
         }
     }
 

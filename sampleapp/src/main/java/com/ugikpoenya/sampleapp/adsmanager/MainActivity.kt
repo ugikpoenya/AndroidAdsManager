@@ -38,7 +38,9 @@ class MainActivity : AppCompatActivity() {
 
     fun showOpenAdsAdmob(view: View) {
         Log.d(LOG, "showOpenAdsAdmob")
-        AdsManager().showOpenAds(this)
+        AdsManager().showOpenAds(this, ORDER_ADMOB) {
+            Log.d(LOG, "Show OpenAds Callback Function")
+        }
     }
 
     fun showInterstitialAdmob(view: View) {
@@ -48,7 +50,9 @@ class MainActivity : AppCompatActivity() {
 
     fun showRewardedAdmob(view: View) {
         Log.d(LOG, "showRewardedAdmob")
-        AdsManager().showRewardedAds(this, ORDER_ADMOB) { isRewarded -> Log.d(LOG, "isRewarded : $isRewarded") }
+        AdsManager().showRewardedAds(this, ORDER_ADMOB) { isRewarded ->
+            Log.d(LOG, "Show Rewarded Callback Function : $isRewarded")
+        }
     }
 
     fun initAdmobBanner(view: View) {

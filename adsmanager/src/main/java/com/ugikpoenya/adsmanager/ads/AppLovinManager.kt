@@ -23,12 +23,13 @@ import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration
 import com.applovin.sdk.AppLovinSdkUtils
 import com.ugikpoenya.adsmanager.AdsManager
+import com.ugikpoenya.adsmanager.ORDER_ADMOB
+import com.ugikpoenya.adsmanager.ORDER_APPLOVIN
 import com.ugikpoenya.adsmanager.globalItemModel
 
 
 private var interstitialAd: MaxInterstitialAd? = null
 var APPLOVIN_TEST_DEVICE_ID: ArrayList<String> = ArrayList()
-private var appOpenAd: MaxAppOpenAd? = null
 
 class AppLovinManager {
     val LOG = "LOG_ADS_APPLOVIN"
@@ -61,7 +62,6 @@ class AppLovinManager {
             AppLovinSdk.getInstance(context).initialize(initConfig.build()) { sdkConfig ->
                 Log.d(LOG, "initAppLovinAds successfully")
                 initInterstitialAppLovin(context)
-                initOpenAdsAppLovin(context)
             }
         }
     }
@@ -282,16 +282,17 @@ class AppLovinManager {
     }
 
     // Init open ads
-    fun initOpenAdsAppLovin(context: Context, callbackFunction: (() -> Unit)? = null) {
+    fun showOpenAdsAppLovin(context: Context, ORDER: Int = 0, callbackFunction: (() -> Unit)? = null) {
         if (globalItemModel.applovin_open_ads.isEmpty()) {
             Log.d(LOG, "AppLovin Open Ads Disable")
-            if (callbackFunction !== null) callbackFunction()
-        } else if (appOpenAd == null) {
+            AdsManager().showOpenAds(context, ORDER, callbackFunction)
+        } else {
             Log.d(LOG, "AppLovin Open Ads Init")
-            appOpenAd = MaxAppOpenAd(globalItemModel.applovin_open_ads)
-            appOpenAd?.setListener(object : MaxAdListener {
+            var appOpenAd = MaxAppOpenAd(globalItemModel.applovin_open_ads)
+            appOpenAd.setListener(object : MaxAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Open Ads onAdLoaded")
+                    appOpenAd.showAd()
                 }
 
                 override fun onAdDisplayed(p0: MaxAd) {
@@ -301,7 +302,7 @@ class AppLovinManager {
                 override fun onAdHidden(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Open Ads onAdHidden")
                     AdsManager().OpenAdsSuccessfullyDisplayed(context)
-                    appOpenAd?.loadAd()
+                    if (callbackFunction !== null) callbackFunction()
                 }
 
                 override fun onAdClicked(p0: MaxAd) {
@@ -311,33 +312,20 @@ class AppLovinManager {
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     Log.d(LOG, "AppLovin Open Ads onAdLoadFailed")
                     Log.d(LOG, p1.message)
+                    AdsManager().showOpenAds(context, ORDER, callbackFunction)
+
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     Log.d(LOG, "AppLovin Open Ads onAdDisplayFailed")
                     Log.d(LOG, p1.message)
+                    AdsManager().showOpenAds(context, ORDER, callbackFunction)
                 }
             })
-            appOpenAd?.loadAd()
+            appOpenAd.loadAd()
 
-
-        } else {
-            Log.d(LOG, "AppLovin Open Ads Already Init")
-            if (callbackFunction !== null) {
-                AdsManager().showOpenAds(context, callbackFunction)
-            }
         }
 
     }
 
-    fun showOpenAdsAppLovin(context: Context, callbackFunction: (() -> Unit)? = null) {
-        if (appOpenAd !== null && appOpenAd!!.isReady) {
-            Log.d(LOG, "AppLovin Open Ads  Will show ad.")
-
-            appOpenAd!!.showAd()
-        } else {
-            Log.d(LOG, "AppLovin Open Ads  null.")
-            if (callbackFunction !== null) callbackFunction()
-        }
-    }
 }
