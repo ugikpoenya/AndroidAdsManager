@@ -4,6 +4,8 @@ package com.ugikpoenya.adsmanager.ads
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.RelativeLayout
 import com.google.android.gms.ads.AdError
@@ -16,6 +18,7 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.appopen.AppOpenAd
+import com.google.android.gms.ads.initialization.AdapterStatus
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAdView
@@ -54,12 +57,39 @@ class AdmobManager {
         ) {
             Log.d(LOG, "initAdmobAds disable")
         } else {
-            MobileAds.initialize(context) {
+            var isAdmobInitCalled = false
+
+            MobileAds.initialize(context) { initializationStatus ->
+                val statusMap = initializationStatus.adapterStatusMap
+                for ((adapterClass, status) in statusMap) {
+                    Log.d(LOG, "Adapter: $adapterClass, State: ${status.initializationState}, Description: ${status.description}")
+                }
+
                 Log.d(LOG, "initAdmobAds successfully")
-                initInterstitialAdmob(context)
-                initRewardedAdmob(context)
-                initOpenAdsAdmob(context, callbackFunction)
+                if (!isAdmobInitCalled) { // Periksa hanya sekali saat inisialisasi pertama
+                    isAdmobInitCalled = true  // Update status
+                    initInterstitialAdmob(context)
+                    initRewardedAdmob(context)
+                    if (AdsManager().isOpenAdsAllowedReadyShow(context)) {
+                        initOpenAdsAdmob(context, callbackFunction)
+                    } else {
+                        initOpenAdsAdmob(context)
+                        callbackFunction()
+                    }
+                }
             }
+
+            // Timeout manual 10 detik
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (!isAdmobInitCalled) {
+                    Log.e(LOG, "AdMob init timeout, lanjutkan tanpa menunggu")
+
+                    // Tetap lanjut walau AdMob gagal init
+                    initInterstitialAdmob(context)
+                    initRewardedAdmob(context)
+                    initOpenAdsAdmob(context, callbackFunction)
+                }
+            }, 10000)
         }
     }
 
@@ -278,6 +308,7 @@ class AdmobManager {
                     override fun onAdDismissedFullScreenContent() {
                         appOpenAd = null
                         Log.d(LOG, "Admob Open Ads  Dismissed")
+                        AdsManager().OpenAdsSuccessfullyDisplayed(context)
                         if (callbackFunction !== null) callbackFunction()
                         initOpenAdsAdmob(context)
                     }

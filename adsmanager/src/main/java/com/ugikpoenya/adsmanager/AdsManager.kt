@@ -27,6 +27,7 @@ class AdsManager {
         if (itemModel != null) {
             Log.d(LOG, "GlobalItemModel init")
             globalItemModel = itemModel
+            globalItemModel.open_ads_last_shown_time = ServerPrefs(context).open_ads_last_shown_time
         }
         if (itemModel !== null && itemModel.admob_gdpr) {
             AdmobManager().initGdpr(context, callbackFunction)
@@ -39,8 +40,57 @@ class AdsManager {
     }
 
     fun showOpenAds(context: Context, callbackFunction: (() -> Unit)? = null) {
-        Log.d(LOG, "showOpenAds")
-        AdmobManager().showOpenAdsAdmob(context, callbackFunction)
+        if (isOpenAdsAllowedReadyShow(context)) {
+            Log.d(LOG, "showOpenAds ")
+            AdmobManager().showOpenAdsAdmob(context, callbackFunction)
+        } else if (callbackFunction !== null) {
+            Log.d(LOG, "Run callbackFunction  ")
+            callbackFunction()
+        } else {
+            Log.d(LOG, "callbackFunction  Null")
+        }
+    }
+
+    fun OpenAdsSuccessfullyDisplayed(context: Context) {
+        Log.d(LOG, "OpenAdsSuccessfullyDisplayed")
+        globalItemModel.open_ads_last_shown_time = System.currentTimeMillis()
+        ServerPrefs(context).open_ads_last_shown_time = globalItemModel.open_ads_last_shown_time
+    }
+
+    fun isOpenAdsAllowedReadyShow(context: Context): Boolean {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val open_ads_delay_first = globalItemModel.open_ads_delay_first * 1000L // 30 detik
+        val open_ads_delay = globalItemModel.open_ads_delay * 1000L // 30 detik
+        val installTime = packageInfo.firstInstallTime
+
+        val currentTime = System.currentTimeMillis()
+        val durationInstalTime = currentTime - installTime
+        val durationLastTime = currentTime - globalItemModel.open_ads_last_shown_time
+
+        Log.d(
+            LOG, "=====OpenAds===================" +
+                    "\nInstallTime : $installTime " +
+                    "\ncurrentTime : $currentTime " +
+                    "\nlastAdShown : " + globalItemModel.open_ads_last_shown_time +
+                    "\n=====Duration===================" +
+
+                    "\ndurationInstalTime : ${durationInstalTime / 1000} Detik" +
+                    "\ndurationLastTime   : ${durationLastTime / 1000} Detik " +
+                    "\n=====Delay===================" +
+                    "\ndelay_first : ${(open_ads_delay_first / 1000).toInt()} Detik" +
+                    "\ndelay       : ${open_ads_delay / 1000} Detik"
+        )
+
+        if (durationInstalTime < open_ads_delay_first) {
+            Log.d(LOG, "Disable Show OpenAds kurang dari durasi instal time")
+            return false
+        }
+
+        if (durationLastTime < open_ads_delay) {
+            Log.d(LOG, "Disable Show OpenAds kurang dari durasi last time")
+            return false
+        }
+        return true
     }
 
     fun initBanner(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {

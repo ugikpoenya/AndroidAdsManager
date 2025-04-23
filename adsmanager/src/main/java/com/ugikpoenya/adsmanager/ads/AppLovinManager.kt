@@ -300,6 +300,7 @@ class AppLovinManager {
 
                 override fun onAdHidden(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Open Ads onAdHidden")
+                    AdsManager().OpenAdsSuccessfullyDisplayed(context)
                     appOpenAd?.loadAd()
                 }
 
