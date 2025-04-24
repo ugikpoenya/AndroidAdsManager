@@ -28,6 +28,8 @@ class AdsManager {
             Log.d(LOG, "GlobalItemModel init")
             globalItemModel = itemModel
             globalItemModel.open_ads_last_shown_time = ServerPrefs(context).open_ads_last_shown_time
+            globalItemModel.interstitial_last_shown_time = ServerPrefs(context).interstitial_last_shown_time
+            globalItemModel.rewarded_ads_last_shown_time = ServerPrefs(context).rewarded_ads_last_shown_time
         }
         if (itemModel !== null && itemModel.admob_gdpr) {
             AdmobManager().initGdpr(context, callbackFunction)
@@ -86,11 +88,11 @@ class AdsManager {
                     "\nlastAdShown : " + globalItemModel.open_ads_last_shown_time +
                     "\n=====Duration===================" +
 
-                    "\ndurationInstalTime : ${durationInstalTime / 1000} Detik" +
-                    "\ndurationLastTime   : ${durationLastTime / 1000} Detik " +
+                    "\ndurationInstalTime : ${durationInstalTime / 1000}" +
+                    "\ndurationLastTime   : ${durationLastTime / 1000} " +
                     "\n=====Delay===================" +
-                    "\ndelay_first : ${(open_ads_delay_first / 1000).toInt()} Detik" +
-                    "\ndelay       : ${open_ads_delay / 1000} Detik"
+                    "\ndelay_first : ${open_ads_delay_first / 1000}" +
+                    "\ndelay       : ${open_ads_delay / 1000}"
         )
 
         if (durationInstalTime < open_ads_delay_first) {
@@ -186,11 +188,11 @@ class AdsManager {
                     "\nlastAdShown : " + globalItemModel.interstitial_last_shown_time +
                     "\n=====Duration===================" +
 
-                    "\ndurationInstalTime : $durationInstalTime " +
-                    "\ndurationLastTime   : $durationLastTime " +
+                    "\ndurationInstalTime : ${durationInstalTime / 1000} " +
+                    "\ndurationLastTime   : ${durationLastTime / 1000} " +
                     "\n=====Delay===================" +
-                    "\ndelay_first : $interstitial_delay_first " +
-                    "\ndelay       : $interstitial_delay"
+                    "\ndelay_first : ${interstitial_delay_first / 1000} " +
+                    "\ndelay       : ${interstitial_delay / 1000}"
         )
 
         if (durationInstalTime < interstitial_delay_first) {
@@ -211,8 +213,8 @@ class AdsManager {
         Log.d(LOG, "Show Interstitial $ORDER intervalCounter " + globalItemModel.interstitial_interval_counter)
         var priority: String? = globalItemModel.interstitial_priority
         if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
-        val array = priority?.split(",")?.map { it.toInt() }
-        if (array != null && array.contains(ORDER)) {
+        val array = priority.split(",").map { it.toInt() }
+        if (array.contains(ORDER)) {
             when {
                 array[ORDER] == ORDER_ADMOB -> AdmobManager().showInterstitialAdmob(context, ORDER + 1)
                 array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showInterstitialFacebook(context, ORDER + 1)
@@ -224,12 +226,13 @@ class AdsManager {
     }
 
     fun showRewardedAds(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
-        val itemModel = ServerPrefs(context).getItemModel()
+        if (!isRewardedAdsAllowedReadyShow(context)) return
+
         Log.d("LOG", "Show  RewardedAds $ORDER")
-        var priority: String? = itemModel?.interstitial_priority
-        if (priority.isNullOrEmpty()) priority = itemModel?.DEFAULT_PRIORITY
-        val array = priority?.split(",")?.map { it.toInt() }
-        if (array != null && array.contains(ORDER)) {
+        var priority: String? = globalItemModel.interstitial_priority
+        if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
+        val array = priority.split(",").map { it.toInt() }
+        if (array.contains(ORDER)) {
             when {
                 array[ORDER] == ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, ORDER + 1, callbackFunction)
                 array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, ORDER + 1, callbackFunction)
@@ -241,6 +244,55 @@ class AdsManager {
             Log.d("LOG", "All rewarded null")
             callbackFunction(false)
         }
+    }
+
+
+    fun RewardedAdsSuccessfullyDisplayed(context: Context) {
+        Log.d(LOG, "RewardedAdsSuccessfullyDisplayed")
+        globalItemModel.rewarded_ads_last_shown_time = System.currentTimeMillis()
+        ServerPrefs(context).rewarded_ads_last_shown_time = globalItemModel.rewarded_ads_last_shown_time
+    }
+
+    fun isRewardedAdsAllowedReadyShow(context: Context): Boolean {
+        if (globalItemModel.rewarded_ads_interval_counter > 0) {
+            Log.d(LOG, "Disable Show RewardedAds intervalCounter " + globalItemModel.rewarded_ads_interval_counter)
+            globalItemModel.rewarded_ads_interval_counter--
+            return false
+        }
+
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val rewarded_ads_delay_first = globalItemModel.rewarded_ads_delay_first * 1000L // 30 detik
+        val rewarded_ads_delay = globalItemModel.rewarded_ads_delay * 1000L // 30 detik
+        val installTime = packageInfo.firstInstallTime
+
+        val currentTime = System.currentTimeMillis()
+        val durationInstalTime = currentTime - installTime
+        val durationLastTime = currentTime - globalItemModel.rewarded_ads_last_shown_time
+
+        Log.d(
+            LOG, "=====RewardedAds===================" +
+                    "\nInstallTime : $installTime " +
+                    "\ncurrentTime : $currentTime " +
+                    "\nlastAdShown : " + globalItemModel.rewarded_ads_last_shown_time +
+                    "\n=====Duration===================" +
+
+                    "\ndurationInstalTime : ${durationInstalTime / 1000} " +
+                    "\ndurationLastTime   : ${durationLastTime / 1000} " +
+                    "\n=====Delay===================" +
+                    "\ndelay_first : ${rewarded_ads_delay_first / 1000} " +
+                    "\ndelay       : ${rewarded_ads_delay / 1000}"
+        )
+
+        if (durationInstalTime < rewarded_ads_delay_first) {
+            Log.d(LOG, "Disable Show RewardedAds kurang dari durasi instal time")
+            return false
+        }
+
+        if (durationLastTime < rewarded_ads_delay) {
+            Log.d(LOG, "Disable Show RewardedAds kurang dari durasi last time")
+            return false
+        }
+        return true
     }
 
 }
