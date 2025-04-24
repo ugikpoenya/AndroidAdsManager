@@ -225,74 +225,86 @@ class AdsManager {
         }
     }
 
-    fun showRewardedAds(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
+    fun showRewardedAds(context: Context, ORDER: Int = 0, onResult: ((isRewarded: Boolean) -> Unit)) {
         if (!isRewardedAdsAllowedReadyShow(context)) return
 
-        Log.d("LOG", "Show  RewardedAds $ORDER")
-        var priority: String? = globalItemModel.interstitial_priority
-        if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
-        val array = priority.split(",").map { it.toInt() }
-        if (array.contains(ORDER)) {
-            when {
-                array[ORDER] == ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, ORDER + 1, callbackFunction)
-                array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, ORDER + 1, callbackFunction)
-                array[ORDER] == ORDER_UNITY -> UnityManager().showRewardedUnity(context, ORDER + 1, callbackFunction)
-                array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, ORDER + 1, callbackFunction)
-                else -> showRewardedAds(context, ORDER + 1, callbackFunction)
+        Log.d(LOG, "Show RewardedAds $ORDER")
+        val priorityList = globalItemModel.interstitial_priority
+            .split(",")
+            .mapNotNull { it.toIntOrNull() }
+
+        if (ORDER >= priorityList.size) {
+            Log.d(LOG, "All rewarded null")
+            onResult(false)
+            return
+        }
+
+        val nextOrder = ORDER + 1
+        val callback: (Boolean) -> Unit = { isRewarded ->
+            if (isRewarded) {
+                val now = System.currentTimeMillis()
+                globalItemModel.rewarded_ads_last_shown_time = now
+                ServerPrefs(context).rewarded_ads_last_shown_time = now
             }
-        } else {
-            Log.d("LOG", "All rewarded null")
-            callbackFunction(false)
+            onResult(isRewarded)
+        }
+
+        when (priorityList[ORDER]) {
+            ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, nextOrder, callback)
+            ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, nextOrder, callback)
+            ORDER_UNITY -> UnityManager().showRewardedUnity(context, nextOrder, callback)
+            ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, nextOrder, callback)
+            else -> showRewardedAds(context, nextOrder, onResult)
         }
     }
 
 
-    fun RewardedAdsSuccessfullyDisplayed(context: Context) {
-        Log.d(LOG, "RewardedAdsSuccessfullyDisplayed")
-        globalItemModel.rewarded_ads_last_shown_time = System.currentTimeMillis()
-        ServerPrefs(context).rewarded_ads_last_shown_time = globalItemModel.rewarded_ads_last_shown_time
-    }
-
     fun isRewardedAdsAllowedReadyShow(context: Context): Boolean {
         if (globalItemModel.rewarded_ads_interval_counter > 0) {
-            Log.d(LOG, "Disable Show RewardedAds intervalCounter " + globalItemModel.rewarded_ads_interval_counter)
+            Log.d(LOG, "Disable Show RewardedAds intervalCounter ${globalItemModel.rewarded_ads_interval_counter}")
             globalItemModel.rewarded_ads_interval_counter--
             return false
         }
 
+        val currentTime = System.currentTimeMillis()
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val rewarded_ads_delay_first = globalItemModel.rewarded_ads_delay_first * 1000L // 30 detik
-        val rewarded_ads_delay = globalItemModel.rewarded_ads_delay * 1000L // 30 detik
         val installTime = packageInfo.firstInstallTime
 
-        val currentTime = System.currentTimeMillis()
-        val durationInstalTime = currentTime - installTime
-        val durationLastTime = currentTime - globalItemModel.rewarded_ads_last_shown_time
+        val delayFirst = globalItemModel.rewarded_ads_delay_first * 1000L
+        val delay = globalItemModel.rewarded_ads_delay * 1000L
+        val lastShown = globalItemModel.rewarded_ads_last_shown_time
+
+        val durationInstall = currentTime - installTime
+        val durationSinceLast = currentTime - lastShown
 
         Log.d(
-            LOG, "=====RewardedAds===================" +
-                    "\nInstallTime : $installTime " +
-                    "\ncurrentTime : $currentTime " +
-                    "\nlastAdShown : " + globalItemModel.rewarded_ads_last_shown_time +
-                    "\n=====Duration===================" +
-
-                    "\ndurationInstalTime : ${durationInstalTime / 1000} " +
-                    "\ndurationLastTime   : ${durationLastTime / 1000} " +
-                    "\n=====Delay===================" +
-                    "\ndelay_first : ${rewarded_ads_delay_first / 1000} " +
-                    "\ndelay       : ${rewarded_ads_delay / 1000}"
+            LOG, """
+        =====RewardedAds===================
+        InstallTime        : $installTime
+        CurrentTime        : $currentTime
+        LastAdShown        : $lastShown
+        =====Duration=======================
+        DurationInstall    : ${durationInstall / 1000}s
+        DurationSinceLast  : ${durationSinceLast / 1000}s
+        =====Delay=========================
+        Delay First        : ${delayFirst / 1000}s
+        Delay              : ${delay / 1000}s
+    """.trimIndent()
         )
 
-        if (durationInstalTime < rewarded_ads_delay_first) {
-            Log.d(LOG, "Disable Show RewardedAds kurang dari durasi instal time")
-            return false
-        }
+        return when {
+            durationInstall < delayFirst -> {
+                Log.d(LOG, "Disable Show RewardedAds: belum cukup durasi install")
+                false
+            }
 
-        if (durationLastTime < rewarded_ads_delay) {
-            Log.d(LOG, "Disable Show RewardedAds kurang dari durasi last time")
-            return false
+            durationSinceLast < delay -> {
+                Log.d(LOG, "Disable Show RewardedAds: belum cukup durasi sejak terakhir ditampilkan")
+                false
+            }
+
+            else -> true
         }
-        return true
     }
 
 }
