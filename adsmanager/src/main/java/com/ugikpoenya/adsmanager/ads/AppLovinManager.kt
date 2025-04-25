@@ -24,10 +24,7 @@ import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration
 import com.applovin.sdk.AppLovinSdkUtils
 import com.ugikpoenya.adsmanager.AdsManager
-import com.ugikpoenya.adsmanager.ORDER_ADMOB
-import com.ugikpoenya.adsmanager.ORDER_APPLOVIN
 import com.ugikpoenya.adsmanager.globalItemModel
-import com.ugikpoenya.servermanager.ServerManager
 
 
 private var interstitialAd: MaxInterstitialAd? = null
@@ -63,7 +60,7 @@ class AppLovinManager {
             // Initialize the SDK with the configuration
             AppLovinSdk.getInstance(context).initialize(initConfig.build()) { sdkConfig ->
                 Log.d(LOG, "initAppLovinAds successfully")
-                initInterstitialAppLovin(context)
+                initInterstitialAppLovin()
             }
         }
     }
@@ -75,7 +72,7 @@ class AppLovinManager {
         } else if (VIEW.childCount == 0) {
             Log.d(LOG, "AppLovin Banner Init")
 
-            val adView = MaxAdView(globalItemModel.applovin_banner, context)
+            val adView = MaxAdView(globalItemModel.applovin_banner)
             adView.setListener(object : MaxAdViewAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Banner onAdLoaded")
@@ -126,12 +123,12 @@ class AppLovinManager {
         }
     }
 
-    fun initInterstitialAppLovin(context: Context) {
+    fun initInterstitialAppLovin() {
         if (globalItemModel.applovin_interstitial.isEmpty()) {
             Log.d(LOG, "AppLovin Interstitial ID set")
         } else {
             Log.d(LOG, "Init AppLovin Interstitial ")
-            interstitialAd = MaxInterstitialAd(globalItemModel.applovin_interstitial, context)
+            interstitialAd = MaxInterstitialAd(globalItemModel.applovin_interstitial)
             interstitialAd?.setExtraParameter("container_view_ads", "true")
             interstitialAd?.setListener(object : MaxAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
@@ -169,7 +166,7 @@ class AppLovinManager {
 
     fun showInterstitialAppLovin(context: Context, ORDER: Int = 0) {
         if (interstitialAd != null && interstitialAd!!.isReady) {
-            interstitialAd?.showAd()
+            interstitialAd?.showAd(context as Activity)
             Log.d(LOG, "Interstitial AppLovin Show")
             AdsManager().interstitielSuccessfullyDisplayed(context)
         } else {
@@ -185,11 +182,11 @@ class AppLovinManager {
         } else {
             Log.d(LOG, "Init AppLovin Rewarded ")
             var isRewardEarned = false
-            var rewardedAd = MaxRewardedAd.getInstance(globalItemModel.applovin_rewarded_ads, context as Activity)
+            var rewardedAd = MaxRewardedAd.getInstance(globalItemModel.applovin_rewarded_ads)
             rewardedAd?.setListener(object : MaxRewardedAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin RewardedAd onAdLoaded")
-                    rewardedAd.showAd(context)
+                    rewardedAd.showAd(context as Activity)
                 }
 
                 override fun onAdDisplayed(p0: MaxAd) {
