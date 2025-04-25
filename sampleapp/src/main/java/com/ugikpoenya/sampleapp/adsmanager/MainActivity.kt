@@ -64,41 +64,49 @@ class MainActivity : AppCompatActivity() {
 
     fun initAdmobBanner(view: View) {
         Log.d(LOG, "initAdmobBanner")
+        lyViewBannerAds?.removeAllViews()
         AdsManager().initBanner(this, lyViewBannerAds!!, ORDER_ADMOB)
     }
 
     fun initAdmobNative(view: View) {
         Log.d(LOG, "initAdmobNative")
+        lyViewNativeAds?.removeAllViews()
         AdsManager().initNative(this, lyViewNativeAds!!, ORDER_ADMOB)
     }
 
     fun initAdmobNativeHome(view: View) {
         Log.d(LOG, "initAdmobNative")
+        lyViewNativeAds?.removeAllViews()
         AdsManager().initNative(this, lyViewNativeAds!!, ORDER_ADMOB, "home")
     }
 
     fun initAdmobNativeDetail(view: View) {
         Log.d(LOG, "initAdmobNative")
+        lyViewNativeAds?.removeAllViews()
         AdsManager().initNative(this, lyViewNativeAds!!, ORDER_ADMOB, "detail")
     }
 
     fun initFacebookNative(view: View) {
         Log.d(LOG, "initFacebookNative")
+        lyViewNativeAds?.removeAllViews()
         FacebookManager().initFacebookNative(this, lyViewNativeAds!!, ORDER_FACEBOOK)
     }
 
     fun initFacebookNativeHome(view: View) {
         Log.d(LOG, "initFacebookNative")
+        lyViewNativeAds?.removeAllViews()
         FacebookManager().initFacebookNative(this, lyViewNativeAds!!, ORDER_FACEBOOK, "home")
     }
 
     fun initFacebookNativeDetail(view: View) {
         Log.d(LOG, "initFacebookNative")
+        lyViewNativeAds?.removeAllViews()
         FacebookManager().initFacebookNative(this, lyViewNativeAds!!, ORDER_FACEBOOK, "detail")
     }
 
     fun initFacebookBanner(view: View) {
         Log.d(LOG, "initFacebookBanner")
+        lyViewBannerAds?.removeAllViews()
         FacebookManager().initFacebookBanner(this, lyViewBannerAds!!, ORDER_FACEBOOK)
     }
 
@@ -114,6 +122,7 @@ class MainActivity : AppCompatActivity() {
 
     fun initUnityBanner(view: View) {
         Log.d(LOG, "initUnityBanner")
+        lyViewBannerAds?.removeAllViews()
         UnityManager().initUnityBanner(this, lyViewBannerAds!!, ORDER_UNITY)
     }
 
@@ -129,11 +138,13 @@ class MainActivity : AppCompatActivity() {
 
     fun initAppLovinNative(view: View) {
         Log.d(LOG, "initAppLovinNative")
+        lyViewNativeAds?.removeAllViews()
         AppLovinManager().initAppLovinNative(this, lyViewNativeAds!!, ORDER_APPLOVIN, "home")
     }
 
     fun initAppLovinBanner(view: View) {
         Log.d(LOG, "initAppLovinBanner")
+        lyViewBannerAds?.removeAllViews()
         AppLovinManager().initAppLovinBanner(this, lyViewBannerAds!!, ORDER_APPLOVIN)
     }
 
