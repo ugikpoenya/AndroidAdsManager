@@ -55,6 +55,7 @@ class AdmobManager {
             && globalItemModel.admob_open_ads.isEmpty()
         ) {
             Log.d(LOG, "initAdmobAds disable")
+            AdsManager().showOpenAds(context, ORDER_ADMOB + 1, callbackFunction)
         } else {
             var isAdmobInitCalled = false
 
