@@ -66,7 +66,21 @@ class MainActivity : AppCompatActivity() {
         Log.d(LOG, "initAdmobNative")
         val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
         lyViewAds.removeAllViews()
+        AdsManager().initNative(this, lyViewAds, ORDER_ADMOB)
+    }
+
+    fun initAdmobNativeHome(view: View) {
+        Log.d(LOG, "initAdmobNative")
+        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
+        lyViewAds.removeAllViews()
         AdsManager().initNative(this, lyViewAds, ORDER_ADMOB, "home")
+    }
+
+    fun initAdmobNativeDetail(view: View) {
+        Log.d(LOG, "initAdmobNative")
+        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
+        lyViewAds.removeAllViews()
+        AdsManager().initNative(this, lyViewAds, ORDER_ADMOB, "detail")
     }
 
     fun initFacebookNative(view: View) {
