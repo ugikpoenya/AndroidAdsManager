@@ -3,14 +3,12 @@ package com.ugikpoenya.adsmanager
 import android.content.Context
 import android.util.Log
 import android.widget.RelativeLayout
-import androidx.core.view.children
 import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.adsmanager.ads.AppLovinManager
 import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.adsmanager.ads.UnityManager
 import com.ugikpoenya.servermanager.ServerManager
 import com.ugikpoenya.servermanager.ServerPrefs
-import androidx.core.view.isEmpty
 import com.ugikpoenya.servermanager.model.ItemModel
 
 var globalItemModel = ItemModel()
@@ -70,35 +68,39 @@ class AdsManager {
     }
 
     fun isOpenAdsAllowedReadyShow(context: Context): Boolean {
+        val currentTime = System.currentTimeMillis()
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val open_ads_delay_first = globalItemModel.open_ads_delay_first * 1000L // 30 detik
-        val open_ads_delay = globalItemModel.open_ads_delay * 1000L // 30 detik
         val installTime = packageInfo.firstInstallTime
 
-        val currentTime = System.currentTimeMillis()
-        val durationInstalTime = currentTime - installTime
-        val durationLastTime = currentTime - globalItemModel.open_ads_last_shown_time
+        val delayFirst = globalItemModel.open_ads_delay_first * 1000L
+        val delay = globalItemModel.open_ads_delay * 1000L
+        val lastShown = globalItemModel.open_ads_last_shown_time
+
+        val durationInstall = currentTime - installTime
+        val durationSinceLast = currentTime - lastShown
 
         Log.d(
-            LOG, "=====OpenAds===================" +
-                    "\nInstallTime : $installTime " +
-                    "\ncurrentTime : $currentTime " +
-                    "\nlastAdShown : " + globalItemModel.open_ads_last_shown_time +
-                    "\n=====Duration===================" +
-
-                    "\ndurationInstalTime : ${durationInstalTime / 1000}" +
-                    "\ndurationLastTime   : ${durationLastTime / 1000} " +
-                    "\n=====Delay===================" +
-                    "\ndelay_first : ${open_ads_delay_first / 1000}" +
-                    "\ndelay       : ${open_ads_delay / 1000}"
+            LOG, """
+        =====OpenAds===================
+        InstallTime        : $installTime
+        CurrentTime        : $currentTime
+        LastAdShown        : $lastShown
+        =====Duration=======================
+        DurationInstall    : ${durationInstall / 1000}s
+        DurationSinceLast  : ${durationSinceLast / 1000}s
+        =====Delay=========================
+        Delay First        : ${delayFirst / 1000}s
+        Delay              : ${delay / 1000}s
+    """.trimIndent()
         )
 
-        if (durationInstalTime < open_ads_delay_first) {
+
+        if (durationInstall < delayFirst) {
             Log.d(LOG, "Disable Show OpenAds kurang dari durasi instal time")
             return false
         }
 
-        if (durationLastTime < open_ads_delay) {
+        if (durationSinceLast < delay) {
             Log.d(LOG, "Disable Show OpenAds kurang dari durasi last time")
             return false
         }
@@ -177,35 +179,38 @@ class AdsManager {
             return false
         }
 
+        val currentTime = System.currentTimeMillis()
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val interstitial_delay_first = globalItemModel.interstitial_delay_first * 1000L // 30 detik
-        val interstitial_delay = globalItemModel.interstitial_delay * 1000L // 30 detik
         val installTime = packageInfo.firstInstallTime
 
-        val currentTime = System.currentTimeMillis()
-        val durationInstalTime = currentTime - installTime
-        val durationLastTime = currentTime - globalItemModel.interstitial_last_shown_time
+        val delayFirst = globalItemModel.interstitial_delay_first * 1000L
+        val delay = globalItemModel.interstitial_delay * 1000L
+        val lastShown = globalItemModel.interstitial_last_shown_time
+
+        val durationInstall = currentTime - installTime
+        val durationSinceLast = currentTime - lastShown
 
         Log.d(
-            LOG, "=====Interstitial===================" +
-                    "\nInstallTime : $installTime " +
-                    "\ncurrentTime : $currentTime " +
-                    "\nlastAdShown : " + globalItemModel.interstitial_last_shown_time +
-                    "\n=====Duration===================" +
-
-                    "\ndurationInstalTime : ${durationInstalTime / 1000} " +
-                    "\ndurationLastTime   : ${durationLastTime / 1000} " +
-                    "\n=====Delay===================" +
-                    "\ndelay_first : ${interstitial_delay_first / 1000} " +
-                    "\ndelay       : ${interstitial_delay / 1000}"
+            LOG, """
+        =====Interstitial===================
+        InstallTime        : $installTime
+        CurrentTime        : $currentTime
+        LastAdShown        : $lastShown
+        =====Duration=======================
+        DurationInstall    : ${durationInstall / 1000}s
+        DurationSinceLast  : ${durationSinceLast / 1000}s
+        =====Delay=========================
+        Delay First        : ${delayFirst / 1000}s
+        Delay              : ${delay / 1000}s
+    """.trimIndent()
         )
 
-        if (durationInstalTime < interstitial_delay_first) {
+        if (durationInstall < delayFirst) {
             Log.d(LOG, "Disable Show Interstitial kurang dari durasi instal time")
             return false
         }
 
-        if (durationLastTime < interstitial_delay) {
+        if (durationSinceLast < delay) {
             Log.d(LOG, "Disable Show Interstitial kurang dari durasi last time")
             return false
         }
@@ -218,15 +223,20 @@ class AdsManager {
         Log.d(LOG, "Show Interstitial $ORDER intervalCounter " + globalItemModel.interstitial_interval_counter)
         var priority: String? = globalItemModel.interstitial_priority
         if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
-        val array = priority.split(",").map { it.toInt() }
-        if (array.contains(ORDER)) {
-            when {
-                array[ORDER] == ORDER_ADMOB -> AdmobManager().showInterstitialAdmob(context, ORDER + 1)
-                array[ORDER] == ORDER_FACEBOOK -> FacebookManager().showInterstitialFacebook(context, ORDER + 1)
-                array[ORDER] == ORDER_UNITY -> UnityManager().showInterstitialUnity(context, ORDER + 1)
-                array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().showInterstitialAppLovin(context, ORDER + 1)
-                else -> showInterstitial(context, ORDER + 1)
-            }
+        val priorityList = priority.split(",")
+            .mapNotNull { it.toIntOrNull() }
+
+        if (ORDER >= priorityList.size) {
+            Log.d(LOG, "All Interstitial null")
+        }
+
+        val nextOrder = ORDER + 1
+        when (priorityList[ORDER]) {
+            ORDER_ADMOB -> AdmobManager().showInterstitialAdmob(context, nextOrder)
+            ORDER_FACEBOOK -> FacebookManager().showInterstitialFacebook(context, nextOrder)
+            ORDER_UNITY -> UnityManager().showInterstitialUnity(context, nextOrder)
+            ORDER_APPLOVIN -> AppLovinManager().showInterstitialAppLovin(context, nextOrder)
+            else -> showInterstitial(context, nextOrder)
         }
     }
 
