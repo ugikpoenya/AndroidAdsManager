@@ -94,7 +94,8 @@ class FacebookManager {
             Log.d(LOG, "Facebook Native ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.childCount == 0) {
-            var nativeType = ServerManager().getItemKey(context, PAGE + "_native_view")
+            var nativeType = ServerManager().getItemKey(context, "native_view_$PAGE")
+            if (nativeType.isNullOrEmpty()) nativeType = globalItemModel.native_view
 
             if (nativeType == "medium") {
                 initFacebookNativeMeidum(context, VIEW, ORDER, PAGE)
