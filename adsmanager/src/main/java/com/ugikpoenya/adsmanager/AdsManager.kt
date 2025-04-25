@@ -139,20 +139,24 @@ class AdsManager {
         var pageNative = ServerManager().getItemKey(context, PAGE + "_native")
 
         if (pageNative !== "false") {
-            if (view.isEmpty()) {
-                val itemModel = ServerPrefs(context).getItemModel()
+            if (view.childCount == 0) {
                 var priority = ServerManager().getItemKey(context, PAGE + "_priority")
-                if (priority.isNullOrEmpty()) priority = itemModel?.DEFAULT_PRIORITY
+                if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
                 Log.d(LOG, "initNative $ORDER $PAGE $priority")
 
-                val array = priority?.split(",")?.map { it.toInt() }
-                if (array != null && array.contains(ORDER)) {
-                    when {
-                        array[ORDER] == ORDER_ADMOB -> AdmobManager().initAdmobNative(context, view, ORDER + 1, PAGE)
-                        array[ORDER] == ORDER_FACEBOOK -> FacebookManager().initFacebookNative(context, view, ORDER + 1, PAGE)
-                        array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().initAppLovinNative(context, view, ORDER + 1, PAGE)
-                        else -> initNative(context, view, ORDER + 1, PAGE)
-                    }
+                val priorityList = priority.split(",")
+                    .mapNotNull { it.toIntOrNull() }
+
+                if (ORDER >= priorityList.size) {
+                    Log.d(LOG, "All Native null")
+                }
+
+                val nextOrder = ORDER + 1
+                when (priorityList[ORDER]) {
+                    ORDER_ADMOB -> AdmobManager().initAdmobNative(context, view, nextOrder, PAGE)
+                    ORDER_FACEBOOK -> FacebookManager().initFacebookNative(context, view, nextOrder, PAGE)
+                    ORDER_APPLOVIN -> AppLovinManager().initAppLovinNative(context, view, nextOrder, PAGE)
+                    else -> initNative(context, view, nextOrder, PAGE)
                 }
             }
         } else {
