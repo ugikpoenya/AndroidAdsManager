@@ -183,6 +183,7 @@ class UnityManager {
                     p1: UnityAds.UnityAdsShowCompletionState,
                 ) {
                     Log.d(LOG, "RewardedAds onUnityAdsShowComplete")
+                    AdsManager().RewardedAdsSuccessfullyDisplayed(context)
                     callbackFunction(true)
                     initRewardedUnity(context)
                 }

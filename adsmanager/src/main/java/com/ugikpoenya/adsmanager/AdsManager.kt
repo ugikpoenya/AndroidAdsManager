@@ -240,7 +240,14 @@ class AdsManager {
         }
     }
 
-    fun showRewardedAds(context: Context, ORDER: Int = 0, onResult: ((isRewarded: Boolean) -> Unit)) {
+    fun RewardedAdsSuccessfullyDisplayed(context: Context) {
+        Log.d(LOG, "RewardedAdsSuccessfullyDisplayed")
+        val now = System.currentTimeMillis()
+        globalItemModel.rewarded_ads_last_shown_time = now
+        ServerPrefs(context).rewarded_ads_last_shown_time = now
+    }
+
+    fun showRewardedAds(context: Context, ORDER: Int = 0, callbackFunction: ((isRewarded: Boolean) -> Unit)) {
         if (!isRewardedAdsAllowedReadyShow(context)) return
 
         Log.d(LOG, "Show RewardedAds $ORDER")
@@ -250,26 +257,17 @@ class AdsManager {
 
         if (ORDER >= priorityList.size) {
             Log.d(LOG, "All rewarded null")
-            onResult(false)
+            callbackFunction(false)
             return
         }
 
         val nextOrder = ORDER + 1
-        val callback: (Boolean) -> Unit = { isRewarded ->
-            if (isRewarded) {
-                val now = System.currentTimeMillis()
-                globalItemModel.rewarded_ads_last_shown_time = now
-                ServerPrefs(context).rewarded_ads_last_shown_time = now
-            }
-            onResult(isRewarded)
-        }
-
         when (priorityList[ORDER]) {
-            ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, nextOrder, callback)
-            ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, nextOrder, callback)
-            ORDER_UNITY -> UnityManager().showRewardedUnity(context, nextOrder, callback)
-            ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, nextOrder, callback)
-            else -> showRewardedAds(context, nextOrder, onResult)
+            ORDER_ADMOB -> AdmobManager().showRewardedAdmob(context, nextOrder, callbackFunction)
+            ORDER_FACEBOOK -> FacebookManager().showRewardedFacebook(context, nextOrder, callbackFunction)
+            ORDER_UNITY -> UnityManager().showRewardedUnity(context, nextOrder, callbackFunction)
+            ORDER_APPLOVIN -> AppLovinManager().showRewardedAppLovin(context, nextOrder, callbackFunction)
+            else -> showRewardedAds(context, nextOrder, callbackFunction)
         }
     }
 

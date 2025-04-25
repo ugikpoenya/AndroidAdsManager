@@ -189,6 +189,7 @@ class FacebookManager {
 
                 override fun onRewardedVideoClosed() {
                     Log.d(LOG, "Facebook Rewarded video ad closed!")
+                    AdsManager().RewardedAdsSuccessfullyDisplayed(context)
                     callbackFunction(isRewardEarned)
                 }
             }

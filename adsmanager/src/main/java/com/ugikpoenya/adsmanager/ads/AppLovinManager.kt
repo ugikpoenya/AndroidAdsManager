@@ -196,6 +196,7 @@ class AppLovinManager {
 
                 override fun onAdHidden(p0: MaxAd) {
                     Log.d(LOG, "AppLovin RewardedAd onAdHidden")
+                    AdsManager().RewardedAdsSuccessfullyDisplayed(context)
                     callbackFunction(isRewardEarned)
                 }
 

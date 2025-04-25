@@ -212,6 +212,7 @@ class AdmobManager {
 
                 override fun onAdDismissedFullScreenContent() {
                     Log.d(LOG, "Admob Rewarded dismissed fullscreen content.")
+                    AdsManager().RewardedAdsSuccessfullyDisplayed(context)
                     callbackFunction(isRewardEarned)
                     admobRewardedAd = null
                     initRewardedAdmob(context)
