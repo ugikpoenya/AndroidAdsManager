@@ -20,6 +20,8 @@ import com.ugikpoenya.adsmanager.ads.UnityManager
 
 class MainActivity : AppCompatActivity() {
     val LOG = "LOG_ADS_MANAGER"
+    var lyViewBannerAds: RelativeLayout? = null
+    var lyViewNativeAds: RelativeLayout? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -29,6 +31,11 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        lyViewBannerAds = findViewById<RelativeLayout>(R.id.lyViewBannerAds)
+        lyViewNativeAds = findViewById<RelativeLayout>(R.id.lyViewNativeAds)
+        AdsManager().initBanner(this, lyViewBannerAds!!)
+        AdsManager().initNative(this, lyViewNativeAds!!)
     }
 
     fun admobResetGdpr(view: View) {
@@ -57,58 +64,42 @@ class MainActivity : AppCompatActivity() {
 
     fun initAdmobBanner(view: View) {
         Log.d(LOG, "initAdmobBanner")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        AdsManager().initBanner(this, lyViewAds, ORDER_ADMOB)
+        AdsManager().initBanner(this, lyViewBannerAds!!, ORDER_ADMOB)
     }
 
     fun initAdmobNative(view: View) {
         Log.d(LOG, "initAdmobNative")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        AdsManager().initNative(this, lyViewAds, ORDER_ADMOB)
+        AdsManager().initNative(this, lyViewNativeAds!!, ORDER_ADMOB)
     }
 
     fun initAdmobNativeHome(view: View) {
         Log.d(LOG, "initAdmobNative")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        AdsManager().initNative(this, lyViewAds, ORDER_ADMOB, "home")
+        AdsManager().initNative(this, lyViewNativeAds!!, ORDER_ADMOB, "home")
     }
 
     fun initAdmobNativeDetail(view: View) {
         Log.d(LOG, "initAdmobNative")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        AdsManager().initNative(this, lyViewAds, ORDER_ADMOB, "detail")
+        AdsManager().initNative(this, lyViewNativeAds!!, ORDER_ADMOB, "detail")
     }
 
     fun initFacebookNative(view: View) {
         Log.d(LOG, "initFacebookNative")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        FacebookManager().initFacebookNative(this, lyViewAds, ORDER_FACEBOOK)
+        FacebookManager().initFacebookNative(this, lyViewNativeAds!!, ORDER_FACEBOOK)
     }
 
     fun initFacebookNativeHome(view: View) {
         Log.d(LOG, "initFacebookNative")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        FacebookManager().initFacebookNative(this, lyViewAds, ORDER_FACEBOOK, "home")
+        FacebookManager().initFacebookNative(this, lyViewNativeAds!!, ORDER_FACEBOOK, "home")
     }
 
     fun initFacebookNativeDetail(view: View) {
         Log.d(LOG, "initFacebookNative")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        FacebookManager().initFacebookNative(this, lyViewAds, ORDER_FACEBOOK, "detail")
+        FacebookManager().initFacebookNative(this, lyViewNativeAds!!, ORDER_FACEBOOK, "detail")
     }
 
     fun initFacebookBanner(view: View) {
         Log.d(LOG, "initFacebookBanner")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        FacebookManager().initFacebookBanner(this, lyViewAds, ORDER_FACEBOOK)
+        FacebookManager().initFacebookBanner(this, lyViewBannerAds!!, ORDER_FACEBOOK)
     }
 
     fun showInterstitialFacebook(view: View) {
@@ -123,9 +114,7 @@ class MainActivity : AppCompatActivity() {
 
     fun initUnityBanner(view: View) {
         Log.d(LOG, "initUnityBanner")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        UnityManager().initUnityBanner(this, lyViewAds, ORDER_UNITY)
+        UnityManager().initUnityBanner(this, lyViewBannerAds!!, ORDER_UNITY)
     }
 
     fun showInterstitialUnity(view: View) {
@@ -140,16 +129,12 @@ class MainActivity : AppCompatActivity() {
 
     fun initAppLovinNative(view: View) {
         Log.d(LOG, "initAppLovinNative")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        AppLovinManager().initAppLovinNative(this, lyViewAds, ORDER_APPLOVIN, "home")
+        AppLovinManager().initAppLovinNative(this, lyViewNativeAds!!, ORDER_APPLOVIN, "home")
     }
 
     fun initAppLovinBanner(view: View) {
         Log.d(LOG, "initAppLovinBanner")
-        val lyViewAds = findViewById<RelativeLayout>(R.id.lyViewAds)
-        lyViewAds.removeAllViews()
-        AppLovinManager().initAppLovinBanner(this, lyViewAds, ORDER_APPLOVIN)
+        AppLovinManager().initAppLovinBanner(this, lyViewBannerAds!!, ORDER_APPLOVIN)
     }
 
     fun showInterstitialAppLovin(view: View) {
@@ -164,7 +149,7 @@ class MainActivity : AppCompatActivity() {
 
     fun showOpenAdsAppLovin(view: View) {
         Log.d(LOG, "showRewardedAppLovin")
-        AppLovinManager().showOpenAdsAppLovin(this){
+        AppLovinManager().showOpenAdsAppLovin(this) {
             Log.d(LOG, "Show AppLovin OpenAds Callback Function")
         }
     }

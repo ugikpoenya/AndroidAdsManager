@@ -72,7 +72,8 @@ class AppLovinManager {
         } else if (VIEW.childCount == 0) {
             Log.d(LOG, "AppLovin Banner Init")
 
-            val adView = MaxAdView(globalItemModel.applovin_banner)
+
+            val adView = MaxAdView(globalItemModel.applovin_banner, context)
             adView.setListener(object : MaxAdViewAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Banner onAdLoaded")
@@ -249,7 +250,7 @@ class AppLovinManager {
                 .build()
 
 
-            val adView = MaxAdView(globalItemModel.applovin_merc, MaxAdFormat.MREC, config)
+            val adView = MaxAdView(globalItemModel.applovin_merc, MaxAdFormat.MREC, context)
             adView.layoutParams = FrameLayout.LayoutParams(widthPx, heightPx)
             adView.setBackgroundColor(Color.BLACK)
             adView.setListener(object : MaxAdViewAdListener {
