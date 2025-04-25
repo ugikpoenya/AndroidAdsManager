@@ -11,6 +11,7 @@ import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdFormat
 import com.applovin.mediation.MaxAdListener
 import com.applovin.mediation.MaxAdViewAdListener
+import com.applovin.mediation.MaxAdViewConfiguration
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.MaxReward
 import com.applovin.mediation.MaxRewardedAdListener
@@ -26,6 +27,7 @@ import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.ORDER_ADMOB
 import com.ugikpoenya.adsmanager.ORDER_APPLOVIN
 import com.ugikpoenya.adsmanager.globalItemModel
+import com.ugikpoenya.servermanager.ServerManager
 
 
 private var interstitialAd: MaxInterstitialAd? = null
@@ -231,7 +233,28 @@ class AppLovinManager {
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.childCount == 0) {
             Log.d(LOG, "AppLovin MREC Init")
-            val adView = MaxAdView(globalItemModel.applovin_merc, MaxAdFormat.MREC, context)
+
+            // Set a custom width, in dp, for the inline adaptive MREC. Otherwise stretch to screen width by using ViewGroup.LayoutParams.MATCH_PARENT
+            val widthDp = 400
+            val widthPx = AppLovinSdkUtils.dpToPx(context, widthDp);
+
+            // Set a maximum height, in dp, for the inline adaptive MREC. Otherwise use standard MREC height of 250 dp
+            // Google recommends a height greater than 50 dp, with a minimum of 32 dp and a maximum equal to the screen height
+            // The value must also not exceed the height of the MaxAdView
+            val heightDp = 300
+            val heightPx = AppLovinSdkUtils.dpToPx(context, heightDp);
+
+
+            val config = MaxAdViewConfiguration.builder()
+                .setAdaptiveType(MaxAdViewConfiguration.AdaptiveType.INLINE)
+                .setAdaptiveWidth(widthDp) // Optional: The adaptive ad will span the width of the application window if a value is not specified
+                .setInlineMaximumHeight(heightDp) // Optional: The maximum height will be the screen height if a value is not specified
+                .build()
+
+
+            val adView = MaxAdView(globalItemModel.applovin_merc, MaxAdFormat.MREC, config)
+            adView.layoutParams = FrameLayout.LayoutParams(widthPx, heightPx)
+            adView.setBackgroundColor(Color.BLACK)
             adView.setListener(object : MaxAdViewAdListener {
                 override fun onAdLoaded(p0: MaxAd) {
                     Log.d(LOG, "AppLovin MREC onAdLoaded")
@@ -270,13 +293,6 @@ class AppLovinManager {
                 }
 
             })
-
-            val width = AppLovinSdkUtils.dpToPx(context, 300)
-            // Banner height on phones and tablets is 50 and 90, respectively
-            val heightPx = AppLovinSdkUtils.dpToPx(context, 250)
-            adView.layoutParams = FrameLayout.LayoutParams(width, heightPx)
-            // Set background or background color for banners to be fully functional
-            adView.setBackgroundColor(Color.BLACK)
             VIEW.addView(adView)
             adView.loadAd()
         }
