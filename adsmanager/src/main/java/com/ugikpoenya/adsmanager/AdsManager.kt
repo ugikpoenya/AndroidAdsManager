@@ -3,6 +3,7 @@ package com.ugikpoenya.adsmanager
 import android.content.Context
 import android.util.Log
 import android.widget.RelativeLayout
+import androidx.core.view.children
 import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.adsmanager.ads.AppLovinManager
 import com.ugikpoenya.adsmanager.ads.FacebookManager
@@ -108,21 +109,24 @@ class AdsManager {
         var pageBanner = ServerManager().getItemKey(context, PAGE + "_banner")
 
         if ((pageBanner !== "false")) {
-            if (view.isEmpty()) {
-                val itemModel = ServerPrefs(context).getItemModel()
+            if (view.childCount == 0) {
                 var priority = ServerManager().getItemKey(context, PAGE + "_priority")
-                if (priority.isNullOrEmpty()) priority = itemModel?.DEFAULT_PRIORITY
-                Log.d(LOG, "initBanner $ORDER $PAGE $priority")
+                if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
+                val priorityList = priority.split(",")
+                    .mapNotNull { it.toIntOrNull() }
 
-                val array = priority?.split(",")?.map { it.toInt() }
-                if (array !== null && array.contains(ORDER)) {
-                    when {
-                        array[ORDER] == ORDER_ADMOB -> AdmobManager().initAdmobBanner(context, view, ORDER + 1, PAGE)
-                        array[ORDER] == ORDER_FACEBOOK -> FacebookManager().initFacebookBanner(context, view, ORDER + 1, PAGE)
-                        array[ORDER] == ORDER_UNITY -> UnityManager().initUnityBanner(context, view, ORDER + 1, PAGE)
-                        array[ORDER] == ORDER_APPLOVIN -> AppLovinManager().initAppLovinBanner(context, view, ORDER + 1, PAGE)
-                        else -> initBanner(context, view, ORDER + 1, PAGE)
-                    }
+                if (ORDER >= priorityList.size) {
+                    Log.d(LOG, "All Banner null")
+                }
+
+                Log.d(LOG, "initBanner $ORDER $PAGE $priority")
+                val nextOrder = ORDER + 1
+                when (priorityList[ORDER]) {
+                    ORDER_ADMOB -> AdmobManager().initAdmobBanner(context, view, nextOrder, PAGE)
+                    ORDER_FACEBOOK -> FacebookManager().initFacebookBanner(context, view, nextOrder, PAGE)
+                    ORDER_UNITY -> UnityManager().initUnityBanner(context, view, nextOrder, PAGE)
+                    ORDER_APPLOVIN -> AppLovinManager().initAppLovinBanner(context, view, nextOrder, PAGE)
+                    else -> initBanner(context, view, nextOrder, PAGE)
                 }
             }
         } else {
