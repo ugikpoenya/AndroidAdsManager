@@ -260,24 +260,7 @@ class AdmobManager {
     }
 
     // Init open ads
-    fun showOpenAdsAdmob(context: Context, ORDER: Int = 0, callbackFunction: (() -> Unit)? = null) {
-        val fullScreenContentCallback: FullScreenContentCallback =
-            object : FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    Log.d(LOG, "Admob Open Ads  Dismissed")
-                    AdsManager().OpenAdsSuccessfullyDisplayed(context)
-                    if (callbackFunction !== null) callbackFunction()
-                }
-
-                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    AdsManager().showOpenAds(context, ORDER, callbackFunction)
-                }
-
-                override fun onAdShowedFullScreenContent() {
-                    Log.d(LOG, "Admob Open Ads  Showed")
-                }
-            }
-
+    fun showOpenAdsAdmob(context: Context, ORDER: Int = 0, callbackFunction: (() -> Unit)) {
         val request = AdRequest.Builder().build()
         if (globalItemModel.admob_open_ads.isEmpty()) {
             Log.d(LOG, "Admob Open Ads Disable")
@@ -289,7 +272,21 @@ class AdmobManager {
                 object : AppOpenAd.AppOpenAdLoadCallback() {
                     override fun onAdLoaded(ad: AppOpenAd) {
                         Log.d(LOG, "Admob Open Ads Loaded")
-                        ad.fullScreenContentCallback = fullScreenContentCallback
+                        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                            override fun onAdDismissedFullScreenContent() {
+                                Log.d(LOG, "Admob Open Ads  Dismissed")
+                                AdsManager().OpenAdsSuccessfullyDisplayed(context)
+                                callbackFunction()
+                            }
+
+                            override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                                AdsManager().showOpenAds(context, ORDER, callbackFunction)
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                Log.d(LOG, "Admob Open Ads  Showed")
+                            }
+                        }
                         ad.show(context as Activity)
                     }
 

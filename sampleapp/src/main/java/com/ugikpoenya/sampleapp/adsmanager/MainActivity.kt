@@ -136,6 +136,8 @@ class MainActivity : AppCompatActivity() {
 
     fun showOpenAdsAppLovin(view: View) {
         Log.d(LOG, "showRewardedAppLovin")
-        AppLovinManager().showOpenAdsAppLovin(this)
+        AppLovinManager().showOpenAdsAppLovin(this){
+            Log.d(LOG, "Show AppLovin OpenAds Callback Function")
+        }
     }
 }

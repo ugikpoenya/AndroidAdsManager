@@ -282,7 +282,7 @@ class AppLovinManager {
     }
 
     // Init open ads
-    fun showOpenAdsAppLovin(context: Context, ORDER: Int = 0, callbackFunction: (() -> Unit)? = null) {
+    fun showOpenAdsAppLovin(context: Context, ORDER: Int = 0, callbackFunction: (() -> Unit)) {
         if (globalItemModel.applovin_open_ads.isEmpty()) {
             Log.d(LOG, "AppLovin Open Ads Disable")
             AdsManager().showOpenAds(context, ORDER, callbackFunction)
@@ -302,7 +302,7 @@ class AppLovinManager {
                 override fun onAdHidden(p0: MaxAd) {
                     Log.d(LOG, "AppLovin Open Ads onAdHidden")
                     AdsManager().OpenAdsSuccessfullyDisplayed(context)
-                    if (callbackFunction !== null) callbackFunction()
+                    callbackFunction()
                 }
 
                 override fun onAdClicked(p0: MaxAd) {
