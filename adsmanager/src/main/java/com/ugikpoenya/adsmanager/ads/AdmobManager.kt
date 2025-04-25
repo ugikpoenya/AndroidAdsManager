@@ -127,7 +127,8 @@ class AdmobManager {
             Log.d(LOG, "Admob Native Init")
             val adLoader = AdLoader.Builder(context, globalItemModel.admob_native)
                 .forNativeAd { nativeAd ->
-                    var nativeType = ServerManager().getItemKey(context, PAGE + "_native_view")
+                    var nativeType = globalItemModel.native_view
+                    if (nativeType.isEmpty()) nativeType = ServerManager().getItemKey(context, "native_view_$PAGE").toString()
 
                     val nativeLayout = if (nativeType == "medium") {
                         R.layout.native_ads_layout_admob_medium
