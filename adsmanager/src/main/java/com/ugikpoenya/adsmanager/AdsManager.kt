@@ -119,6 +119,7 @@ class AdsManager {
 
                 if (ORDER >= priorityList.size) {
                     Log.d(LOG, "All Banner null")
+                    return // Berhenti untuk menghindari rekursi tak terhingga
                 }
 
                 Log.d(LOG, "initBanner $ORDER $PAGE $priority")
@@ -151,6 +152,7 @@ class AdsManager {
 
                 if (ORDER >= priorityList.size) {
                     Log.d(LOG, "All Native null")
+                    return // Berhenti untuk menghindari rekursi tak terhingga
                 }
 
                 val nextOrder = ORDER + 1
@@ -228,6 +230,7 @@ class AdsManager {
 
         if (ORDER >= priorityList.size) {
             Log.d(LOG, "All Interstitial null")
+            return // Berhenti untuk menghindari rekursi tak terhingga
         }
 
         val nextOrder = ORDER + 1
@@ -258,7 +261,7 @@ class AdsManager {
         if (ORDER >= priorityList.size) {
             Log.d(LOG, "All rewarded null")
             callbackFunction(false)
-            return
+            return // Berhenti untuk menghindari rekursi tak terhingga
         }
 
         val nextOrder = ORDER + 1
