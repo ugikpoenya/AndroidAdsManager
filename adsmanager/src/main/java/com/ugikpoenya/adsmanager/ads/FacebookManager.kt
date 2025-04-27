@@ -23,6 +23,7 @@ import com.ugikpoenya.adsmanager.AdsManager
 import com.ugikpoenya.adsmanager.R
 import com.ugikpoenya.adsmanager.globalItemModel
 import com.ugikpoenya.servermanager.ServerManager
+import com.ugikpoenya.servermanager.ServerPrefs
 
 
 var facebookInterstitial: InterstitialAd? = null
@@ -94,7 +95,7 @@ class FacebookManager {
             Log.d(LOG, "Facebook Native ID not set ")
             AdsManager().initNative(context, VIEW, ORDER, PAGE)
         } else if (VIEW.childCount == 0) {
-            var nativeType = ServerManager().getItemKey(context, "native_view_$PAGE")
+            var nativeType = ServerPrefs(context).getItemKey("native_view_$PAGE")
             if (nativeType.isNullOrEmpty()) nativeType = globalItemModel.native_view
 
             if (nativeType == "medium") {

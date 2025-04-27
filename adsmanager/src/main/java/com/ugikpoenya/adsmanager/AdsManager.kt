@@ -108,11 +108,11 @@ class AdsManager {
     }
 
     fun initBanner(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        var pageBanner = ServerManager().getItemKey(context, PAGE + "_banner")
+        var pageBanner = ServerPrefs(context).getItemKey(PAGE + "_banner")
 
         if ((pageBanner !== "false")) {
             if (view.childCount == 0) {
-                var priority = ServerManager().getItemKey(context, PAGE + "_priority")
+                var priority = ServerPrefs(context).getItemKey(PAGE + "_priority")
                 if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
                 val priorityList = priority.split(",")
                     .mapNotNull { it.toIntOrNull() }
@@ -138,11 +138,11 @@ class AdsManager {
     }
 
     fun initNative(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
-        var pageNative = ServerManager().getItemKey(context, PAGE + "_native")
+        var pageNative = ServerPrefs(context).getItemKey(PAGE + "_native")
 
         if (pageNative !== "false") {
             if (view.childCount == 0) {
-                var priority = ServerManager().getItemKey(context, PAGE + "_priority")
+                var priority = ServerPrefs(context).getItemKey(PAGE + "_priority")
                 if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
                 Log.d(LOG, "initNative $ORDER $PAGE $priority")
 
