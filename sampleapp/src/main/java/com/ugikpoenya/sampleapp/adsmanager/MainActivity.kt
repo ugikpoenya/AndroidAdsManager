@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
 
         lyViewBannerAds = findViewById<RelativeLayout>(R.id.lyViewBannerAds)
         lyViewNativeAds = findViewById<RelativeLayout>(R.id.lyViewNativeAds)
-        AdsManager().initBanner(this, lyViewBannerAds!!)
-        AdsManager().initNative(this, lyViewNativeAds!!)
+        AdsManager().initBanner(this, lyViewBannerAds!!, 0, "home")
+        AdsManager().initNative(this, lyViewNativeAds!!, 0, "home")
     }
 
     fun admobResetGdpr(view: View) {
