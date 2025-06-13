@@ -109,8 +109,9 @@ class AdsManager {
 
     fun initBanner(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
         var pageBanner = ServerPrefs(context).getItemKey(PAGE + "_banner")
+        Log.d(LOG, PAGE + "_banner : " + pageBanner)
 
-        if ((pageBanner !== "false")) {
+        if (pageBanner.toString() != "false") {
             if (view.childCount == 0) {
                 var priority = ServerPrefs(context).getItemKey(PAGE + "_priority")
                 if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
@@ -140,8 +141,9 @@ class AdsManager {
 
     fun initNative(context: Context, view: RelativeLayout, ORDER: Int = 0, PAGE: String = "") {
         var pageNative = ServerPrefs(context).getItemKey(PAGE + "_native")
+        Log.d(LOG, PAGE + "_native : " + pageNative)
 
-        if (pageNative !== "false") {
+        if (pageNative != "false") {
             if (view.childCount == 0) {
                 var priority = ServerPrefs(context).getItemKey(PAGE + "_priority")
                 if (priority.isNullOrEmpty()) priority = globalItemModel.DEFAULT_PRIORITY
