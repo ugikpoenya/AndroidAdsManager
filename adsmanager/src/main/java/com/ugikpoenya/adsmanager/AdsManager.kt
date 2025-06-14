@@ -7,7 +7,6 @@ import com.ugikpoenya.adsmanager.ads.AdmobManager
 import com.ugikpoenya.adsmanager.ads.AppLovinManager
 import com.ugikpoenya.adsmanager.ads.FacebookManager
 import com.ugikpoenya.adsmanager.ads.UnityManager
-import com.ugikpoenya.servermanager.ServerManager
 import com.ugikpoenya.servermanager.ServerPrefs
 import com.ugikpoenya.servermanager.model.ItemModel
 
@@ -16,6 +15,7 @@ var ORDER_ADMOB: Int = 0
 var ORDER_FACEBOOK: Int = 1
 var ORDER_UNITY: Int = 2
 var ORDER_APPLOVIN: Int = 3
+var interstitialFirstCount = true
 
 class AdsManager {
     val LOG = "LOG_ADS_MANAGER"
@@ -177,6 +177,12 @@ class AdsManager {
     }
 
     fun isInterstitielAllowedReadyShow(context: Context): Boolean {
+        if (interstitialFirstCount) {
+            Log.d(LOG, "interstitialFirstCount")
+            globalItemModel.interstitial_interval_counter = globalItemModel.interstitial_interval_first
+            interstitialFirstCount = false
+        }
+
         if (globalItemModel.interstitial_interval_counter > 0) {
             Log.d(LOG, "Disable Show Interstitial intervalCounter " + globalItemModel.interstitial_interval_counter)
             globalItemModel.interstitial_interval_counter--
